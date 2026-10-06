@@ -1,0 +1,289 @@
+/* Catalogue uniquement : aucun sélecteur ne vise les autres pages. */
+#p-training .catalog-eyebrow { color: var(--wine); font-size: 11px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+#p-training .catalog-main { padding-top: 54px; scroll-margin-top: 110px; }
+#p-training .catalog-toolbar { margin-bottom: 38px; }
+#p-training .catalog-filters { display: flex; flex-wrap: wrap; gap: 10px; }
+#p-training .catalog-filter { padding: 12px 17px; border: 1px solid var(--line); border-radius: 999px; background: var(--paper); color: var(--wine); font-size: 13px; font-weight: 800; }
+#p-training .catalog-filter[aria-pressed="true"] { background: var(--wine); color: #fff; border-color: var(--wine); }
+#p-training .catalog-filter:hover { border-color: var(--wine); }
+#p-training .catalog-count { color: var(--muted); font-size: 13px; margin: 16px 0 0; }
+#p-training .catalog-universe-heading { border-bottom: 1px solid var(--line); padding-bottom: 18px; margin: 0 0 28px; }
+#p-training .catalog-universe-heading h2 { color: var(--wine); font-size: clamp(32px, 4vw, 46px); line-height: 1.1; margin: 8px 0; }
+#p-training .catalog-universe-heading p { margin: 0; color: var(--muted); }
+#p-training [data-catalog-universe]:not([hidden]) + [data-catalog-universe] { margin-top: 76px; }
+#p-training .catalog-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+#p-training .catalog-card { padding: 25px; border: 1px solid var(--line); border-top: 3px solid var(--copper); border-radius: 24px; background: linear-gradient(145deg, #fff, var(--paper)); box-shadow: 0 14px 35px #3c251910; display: flex; flex-direction: column; gap: 18px; }
+#p-training .catalog-card h4 { color: var(--wine); font-family: Georgia, serif; font-size: 26px; font-weight: 500; line-height: 1.13; margin: 0; overflow-wrap: break-word; }
+#p-training .catalog-card .catalog-eyebrow { font-size: 10px; }
+#p-training .catalog-card-hook { color: var(--muted); font-size: 14px; margin: 0; }
+#p-training .catalog-provider { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
+#p-training .catalog-provider strong { color: var(--wine); font-weight: 700; }
+#p-training .catalog-provider span { display: block; margin-top: 4px; }
+#p-training .catalog-card-summary { color: var(--muted); font-size: 13px; margin: 0; }
+#p-training .catalog-meta { display: flex; flex-wrap: wrap; gap: 7px; font-size: 12px; color: var(--wine); }
+#p-training .catalog-meta span { padding: 5px 9px; background: var(--cream); border-radius: 7px; }
+#p-training .catalog-card-prices { border-top: 1px solid var(--line); padding-top: 15px; margin-top: auto; }
+#p-training .catalog-card-prices p { font-size: 13px; color: var(--muted); margin: 0 0 6px; }
+#p-training .catalog-card-prices strong { color: var(--ink); font-size: 18px; }
+#p-training .catalog-card-prices .catalog-member { color: var(--wine); font-size: 12px; }
+#p-training .catalog-detail-button { width: 100%; border: 1px solid var(--line); border-radius: 12px; background: transparent; padding: 12px; color: var(--wine); font-weight: 800; font-size: 13px; }
+#p-training .catalog-detail-button:hover { background: var(--cream); border-color: var(--copper); }
+#p-training [hidden] { display: none !important; }
+#p-training button:focus-visible, #p-training a:focus-visible { outline: 3px solid var(--wine); outline-offset: 4px; }
+#p-training .catalog-cta { margin-top: 12px; padding: 32px; border-radius: 26px; background: var(--wine); color: #fff; display: flex; justify-content: space-between; align-items: center; gap: 25px; }
+#p-training .catalog-cta h2 { font-size: 32px; line-height: 1.1; margin: 0 0 10px; }
+#p-training .catalog-cta p { margin: 0; color: #ffffffd6; font-size: 14px; max-width: 620px; }
+#p-training .catalog-cta .btn { flex-shrink: 0; background: var(--paper); color: var(--wine); }
+#p-training .catalog-dialog { width: min(780px, calc(100% - 32px)); max-height: calc(100dvh - 32px); padding: 0; border: 1px solid var(--line); border-radius: 26px; background: var(--paper); color: var(--ink); box-shadow: var(--shadow); overflow: auto; overscroll-behavior: contain; }
+#p-training .catalog-dialog::backdrop { background: #211511b8; backdrop-filter: blur(5px); }
+#p-training .catalog-dialog-bar { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--paper); border-bottom: 1px solid var(--line); padding: 13px 24px; }
+#p-training .catalog-close { border: 1px solid var(--line); border-radius: 10px; background: #fff; color: var(--wine); font-size: 13px; font-weight: 800; padding: 9px 13px; }
+#p-training .catalog-dialog-content { padding: 30px; }
+#p-training #catalog-detail-title { font-size: clamp(29px, 4vw, 40px); line-height: 1.08; margin: 12px 0 22px; color: var(--wine); }
+#p-training .catalog-detail-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 0 0 24px; padding: 20px; border: 1px solid var(--line); border-radius: 16px; background: #fff; }
+#p-training .catalog-detail-facts dt { color: var(--wine); font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: .06em; }
+#p-training .catalog-detail-facts dd { margin: 4px 0 0; font-size: 14px; }
+#p-training .catalog-detail-block { margin-top: 22px; }
+#p-training .catalog-detail-block h3 { font-size: 24px; color: var(--wine); margin: 0 0 8px; }
+#p-training .catalog-detail-block p, #p-training .catalog-detail-block li { font-size: 14px; }
+#p-training .catalog-detail-block p { margin: 0; }
+#p-training .catalog-detail-block ul { padding-left: 20px; margin: 0; }
+#p-training .catalog-detail-block li + li { margin-top: 6px; }
+#p-training .catalog-detail-prices { background: var(--cream); border-radius: 16px; padding: 20px; margin-top: 24px; }
+#p-training .catalog-detail-prices p { margin: 0 0 8px; font-size: 14px; }
+#p-training .catalog-detail-prices p:last-child { margin: 0; }
+#p-training .catalog-detail-prices strong { color: var(--wine); }
+#p-training .catalog-dialog-actions { padding: 0 30px 30px; }
+#p-training .catalog-detail-lead { color: var(--wine); font-family: Georgia, serif; font-size: 22px; line-height: 1.25; margin: -4px 0 22px; }
+#p-training .catalog-dialog-content > .catalog-provider { margin: -8px 0 20px; }
+@media (max-width: 1000px) {
+  #p-training .catalog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #p-training .catalog-cta { align-items: flex-start; flex-direction: column; }
+}
+@media (max-width: 650px) {
+  #p-training .hero h1 { font-size: 42px; }
+  #p-training .catalog-grid { grid-template-columns: 1fr; }
+  #p-training .catalog-card { padding: 22px; }
+  #p-training .catalog-filter { font-size: 12px; padding: 11px 13px; }
+  #p-training .catalog-cta { padding: 25px; }
+  #p-training .catalog-cta .btn { width: 100%; }
+  #p-training .catalog-dialog { width: calc(100% - 20px); max-height: calc(100dvh - 20px); border-radius: 18px; }
+  #p-training .catalog-dialog-bar { padding: 12px 18px; }
+  #p-training .catalog-dialog-content { padding: 22px; }
+  #p-training .catalog-detail-facts { grid-template-columns: 1fr; }
+  #p-training .catalog-dialog-actions { padding: 0 22px 22px; }
+  #p-training .catalog-dialog-actions .btn { width: 100%; }
+}
+
+/* Sessions programmées et formation à prise en charge possible. */
+#p-training .catalog-upcoming{display:grid;grid-template-columns:220px 1fr;gap:18px;align-items:center;margin:-20px 0 30px;padding:18px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+#p-training .catalog-upcoming-kicker{margin:0 0 5px;color:var(--copper);font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}
+#p-training .catalog-upcoming h2{margin:0;color:var(--wine);font-family:Georgia,serif;font-size:25px;font-weight:500;line-height:1.1}
+#p-training .catalog-upcoming-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#p-training .catalog-upcoming button{display:grid;gap:4px;padding:9px 11px;border:1px solid #dfc9b8;border-radius:10px;background:#fffdfa;color:var(--wine);text-align:left;cursor:pointer}
+#p-training .catalog-upcoming button strong{font-size:12px;text-transform:capitalize}#p-training .catalog-upcoming button span{font-size:11px;line-height:1.35}
+#p-training .catalog-funding-feature,#p-training .catalog-specific-feature{margin-bottom:16px;padding:18px;border:1px solid #c89b7b;border-radius:16px;background:linear-gradient(125deg,#fff8ef,#f8e7da);box-shadow:0 8px 24px #7a432014}
+#p-training .catalog-funding-kicker{margin:0 0 6px;color:var(--wine);font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+#p-training .catalog-funding-note{max-width:820px;margin:0 0 14px;color:var(--muted);font-size:13px;line-height:1.5}
+#p-training .catalog-card--funding,#p-training .catalog-card--specific{border-top-color:var(--wine);box-shadow:0 10px 28px #7a432020}
+#p-training .catalog-card--funding .catalog-course-status,#p-training .catalog-card--specific .catalog-course-status{background:var(--wine);border-color:var(--wine);color:#fff}
+@media (prefers-reduced-motion:no-preference){#p-training .catalog-card--funding{animation:catalogFundingGlow 3.6s ease-in-out infinite}@keyframes catalogFundingGlow{50%{box-shadow:0 12px 34px #7a432038}}}
+@media (max-width:1180px){#p-training .catalog-upcoming{grid-template-columns:1fr}#p-training .catalog-upcoming-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:650px){#p-training .catalog-upcoming{margin:-10px 0 22px;padding:14px 0;gap:12px}#p-training .catalog-upcoming-list{grid-template-columns:1fr}#p-training .catalog-funding-feature{padding:14px}.catalog-funding-note{text-align:justify}}
+
+/* Catalogue compact : les contenus complets restent dans les fiches détail. */
+#p-training .catalog-main{padding-top:76px;padding-bottom:100px}
+#p-training .catalog-toolbar{margin-bottom:48px}
+#p-training .catalog-universe-heading{margin-bottom:26px;padding-bottom:24px}
+#p-training [data-catalog-universe]:not([hidden]) + [data-catalog-universe]{margin-top:88px}
+#p-training .catalog-group-list{border-top:1px solid #d7bfad}
+#p-training .catalog-group{border-bottom:1px solid #d7bfad}
+#p-training .catalog-group-heading{display:flex;align-items:baseline;justify-content:space-between;gap:20px;padding:24px 44px 24px 4px;color:var(--wine);font-family:Georgia,serif;font-size:clamp(23px,2.4vw,31px);line-height:1.2;cursor:pointer;list-style:none;position:relative;transition:color .2s ease,padding-left .2s ease}
+#p-training .catalog-group-heading::-webkit-details-marker{display:none}
+#p-training .catalog-group-heading:hover{padding-left:12px;color:var(--copper)}
+#p-training .catalog-group-heading small{font-family:Arial,sans-serif;font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap}
+#p-training .catalog-group-heading::after{content:'+';position:absolute;right:5px;top:19px;color:var(--copper);font-family:Arial,sans-serif;font-size:30px;font-weight:300}
+#p-training .catalog-group[open] .catalog-group-heading::after{content:'−'}
+#p-training .catalog-group .catalog-grid{padding:4px 0 30px}
+#p-training .catalog-grid{gap:12px}
+#p-training .catalog-card{gap:10px;padding:19px 20px;border:1px solid #e6d8cc;border-radius:12px;background:#fffdfa;box-shadow:0 3px 14px #3c251908;transition:transform .22s ease,box-shadow .22s ease}
+#p-training .catalog-card:hover{transform:translateY(-3px);box-shadow:0 10px 23px #3c251916}
+#p-training .catalog-card h4{font-size:21px;line-height:1.18}
+#p-training .catalog-card .catalog-eyebrow,#p-training .catalog-card .catalog-provider,#p-training .catalog-card-summary{display:none}
+#p-training .catalog-card-hook{font-size:13px;line-height:1.45}
+#p-training .catalog-meta{gap:0;margin-top:2px}
+#p-training .catalog-meta span{padding:0;background:transparent;border-radius:0;color:var(--copper);font-size:12px;font-weight:800}
+#p-training .catalog-meta span:not(:first-child){display:none}
+#p-training .catalog-card-prices{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:auto;padding-top:12px}
+#p-training .catalog-card-prices p{margin:0;font-size:11px;line-height:1.45}
+#p-training .catalog-card-prices strong{display:inline-block;margin-top:2px;font-size:16px;line-height:1.25}
+#p-training .catalog-card-prices .catalog-member{font-size:11px}
+#p-training .catalog-detail-button{width:auto;align-self:flex-start;margin-top:3px;padding:7px 0;border:0;border-bottom:1px solid #c49a80;border-radius:0;font-size:12px;text-align:left}
+#p-training .catalog-detail-button:hover{background:transparent;border-color:var(--wine)}
+#p-training [data-catalog-universe="prevention"] .catalog-card-prices{grid-template-columns:1fr}
+#p-training [data-catalog-universe="administratif"] .catalog-card-prices{grid-template-columns:1fr}
+@media(max-width:650px){
+  #p-training .catalog-main{padding-top:62px;padding-bottom:76px}
+  #p-training .catalog-toolbar{margin-bottom:36px}
+  #p-training .catalog-group-heading{padding-top:20px;padding-bottom:20px;font-size:23px}
+  #p-training .catalog-group-heading::after{top:15px}
+  #p-training .catalog-card{padding:18px}
+}
+@media(prefers-reduced-motion:reduce){
+  #p-training .catalog-card,#p-training .catalog-group-heading{transition:none}
+}
+
+/* Passe catalogue évolutif : informations essentielles à la carte, détails dans la fiche. */
+#p-training .catalog-universe-heading { margin-bottom: 20px; padding-bottom: 16px; }
+#p-training .catalog-universe-heading h2 { font-size: clamp(26px, 3.1vw, 36px); line-height: 1.13; margin: 4px 0 8px; }
+#p-training .catalog-universe-heading p { font-size: 14px; line-height: 1.5; max-width: 760px; }
+#p-training .catalog-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+#p-training .catalog-group .catalog-grid { padding-bottom: 24px; }
+#p-training .catalog-card { gap: 9px; min-height: 0; padding: 17px 18px 15px; border-color: #e5d7cb; border-radius: 10px; box-shadow: 0 2px 10px #3c251908; }
+#p-training .catalog-card h4 { font-size: 19px; line-height: 1.17; }
+#p-training .catalog-card-hook { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; font-size: 12.5px; line-height: 1.42; }
+#p-training .catalog-meta { margin-top: 1px; }
+#p-training .catalog-card-prices { gap: 9px; padding-top: 10px; }
+#p-training .catalog-card-prices strong { font-size: 15px; }
+#p-training .catalog-detail-button { margin-top: 0; padding: 5px 0; }
+#p-training [data-catalog-universe="administratif"] .catalog-card-prices { grid-template-columns: 1fr 1fr; }
+#p-training .catalog-course-status { align-self: flex-start; margin-top: -2px; padding: 3px 7px; border: 1px solid #d6b38f; border-radius: 999px; background: #fff8ef; color: var(--wine); font-size: 10px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+#p-training .catalog-next-session { margin: 0; color: var(--wine); font-size: 11px; font-weight: 700; line-height: 1.35; }
+#p-training .catalog-card[data-catalog-status="upcoming"] { background: linear-gradient(145deg, #fffdfa, #fbf4ed); border-color: #dac0ab; box-shadow: none; }
+@media (max-width: 1180px) { #p-training .catalog-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 1000px) { #p-training .catalog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 650px) {
+  #p-training .catalog-universe-heading h2 { font-size: 27px; }
+  #p-training .catalog-universe-heading p { font-size: 13px; }
+  #p-training .catalog-card { padding: 16px; }
+  #p-training .catalog-card h4 { font-size: 19px; }
+  #p-training .catalog-card-hook { font-size: 13px; }
+  #p-training .catalog-grid { grid-template-columns: 1fr; gap: 10px; }
+}
+
+/* Parcours catalogue : domaine, thématique, formation, détail. */
+#p-training .catalog-toolbar { display: grid; gap: 18px; margin-bottom: 42px; }
+#p-training .catalog-filters { gap: 8px; }
+#p-training .catalog-filter { padding: 10px 14px; font-size: 12px; }
+#p-training .catalog-summary { display: flex; flex-wrap: wrap; gap: 10px 24px; padding: 14px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+#p-training .catalog-summary p { margin: 0; color: var(--muted); font-size: 12px; }
+#p-training .catalog-summary strong { color: var(--wine); font-family: Georgia, serif; font-size: 24px; font-weight: 500; margin-right: 5px; }
+#p-training .catalog-count { margin: 0; }
+#p-training [data-catalog-universe]:not([hidden]) + [data-catalog-universe] { margin-top: 76px; }
+#p-training .catalog-universe-heading { display: block; }
+#p-training .catalog-universe-heading::after { content: 'Parcours de formation'; display: block; margin-top: 9px; color: var(--copper); font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+#p-training .catalog-topic-list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+#p-training .catalog-topic { border: 1px solid #dfc9b8; border-radius: 14px; background: #fffdfa; box-shadow: 0 3px 14px #3c251908; overflow: hidden; }
+#p-training .catalog-topic[open] { grid-column: 1 / -1; }
+#p-training .catalog-topic-heading { display: grid; min-height: 178px; align-content: start; gap: 10px; padding: 20px 42px 20px 19px; color: var(--wine); cursor: pointer; list-style: none; position: relative; }
+#p-training .catalog-topic-heading::-webkit-details-marker { display: none; }
+#p-training .catalog-topic-heading::after { content: '+'; position: absolute; top: 17px; right: 17px; color: var(--copper); font-size: 25px; font-weight: 300; }
+#p-training .catalog-topic[open] .catalog-topic-heading { min-height: 0; border-bottom: 1px solid #ead4c0; background: linear-gradient(135deg, #fffaf5, #f7ebdf); }
+#p-training .catalog-topic[open] .catalog-topic-heading::after { content: '−'; }
+#p-training .catalog-topic-heading h3 { margin: 0; font-family: Georgia, serif; font-size: 22px; font-weight: 500; line-height: 1.12; }
+#p-training .catalog-topic-heading p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
+#p-training .catalog-topic-heading small { margin-top: auto; color: var(--copper); font-size: 11px; font-weight: 800; line-height: 1.35; }
+#p-training .catalog-topic-grid { padding: 14px; }
+#p-training .catalog-card { padding: 15px 16px 13px; }
+#p-training .catalog-card h4 { font-size: 18px; }
+#p-training .catalog-card-hook { min-height: 35px; }
+#p-training .catalog-course-status { margin-top: -1px; padding: 4px 8px; border-radius: 999px; font-size: 10px; font-weight: 900; letter-spacing: .06em; }
+#p-training .catalog-course-status--open { border-color: #b99477; background: #f4e7dc; color: var(--wine); }
+#p-training .catalog-course-status--upcoming { border-color: var(--copper); background: var(--wine); color: #fff; }
+#p-training .catalog-card[data-catalog-status="upcoming"] { background: #fffaf5; border-color: #d8b79f; }
+#p-training .catalog-card[data-catalog-status="upcoming"] .catalog-detail-button { border-color: var(--copper); }
+@media (max-width: 1180px) {
+  #p-training .catalog-topic-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 650px) {
+  #p-training .catalog-toolbar { margin-bottom: 32px; }
+  #p-training .catalog-summary { display: grid; grid-template-columns: 1fr; gap: 4px; }
+  #p-training .catalog-topic-list { grid-template-columns: 1fr; gap: 10px; }
+  #p-training .catalog-topic-heading { min-height: 0; padding: 18px 42px 18px 17px; }
+  #p-training .catalog-topic-grid { padding: 10px; }
+  #p-training .catalog-card-hook { min-height: 0; }
+}
+
+
+/* Hiérarchie des domaines : trois portes d’entrée de même niveau. */
+#p-training .catalog-domain-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+#p-training .catalog-domain-list [data-catalog-universe],
+#p-training .catalog-domain-list [data-catalog-universe]:not([hidden]) + [data-catalog-universe] { margin: 0; min-width: 0; }
+#p-training .catalog-domain { height: 100%; overflow: hidden; border: 1px solid #dfc9b8; border-radius: 15px; background: #fffdfa; box-shadow: 0 3px 14px #3c251908; }
+#p-training .catalog-domain[open] { grid-column: 1 / -1; height: auto; }
+#p-training .catalog-domain-heading { display: grid; min-height: 210px; align-content: start; gap: 12px; padding: 22px 45px 22px 20px; cursor: pointer; list-style: none; position: relative; }
+#p-training .catalog-domain-heading::-webkit-details-marker { display: none; }
+#p-training .catalog-domain-heading::after { content: '+'; position: absolute; top: 18px; right: 18px; color: var(--copper); font-size: 26px; font-weight: 300; }
+#p-training .catalog-domain[open] .catalog-domain-heading { min-height: 0; border-bottom: 1px solid var(--line); background: linear-gradient(135deg, #fffaf5, #f7ebdf); }
+#p-training .catalog-domain[open] .catalog-domain-heading::after { content: '−'; }
+#p-training .catalog-domain-heading h2 { margin: 0; color: var(--wine); font-family: Georgia, serif; font-size: clamp(26px, 2.25vw, 34px); font-weight: 500; line-height: 1.1; }
+#p-training .catalog-domain-heading p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+#p-training .catalog-domain-heading small { margin-top: auto; color: var(--copper); font-size: 11px; font-weight: 900; line-height: 1.35; }
+#p-training .catalog-domain > .catalog-grid { padding: 14px; }
+#p-training .catalog-domain > .catalog-topic-list { padding: 14px; }
+@media (max-width: 1180px) {
+  #p-training .catalog-domain-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 650px) {
+  #p-training .catalog-domain-list { grid-template-columns: 1fr; gap: 10px; }
+  #p-training .catalog-domain-heading { min-height: 0; padding: 19px 43px 19px 18px; }
+  #p-training .catalog-domain > .catalog-grid,
+  #p-training .catalog-domain > .catalog-topic-list { padding: 10px; }
+}
+
+/* Les cartes-domaines servent d'entrées. Leur contenu s'affiche dans une zone commune pleine largeur. */
+#p-training .catalog-domain-list { margin: 0; }
+#p-training .catalog-domain[open] { grid-column: auto; height: 100%; }
+#p-training .catalog-domain[open] .catalog-domain-heading { min-height: 210px; border-bottom: 0; background: linear-gradient(135deg, #fffaf5, #f7ebdf); }
+#p-training .catalog-domain-content-zone { width: 100%; margin-top: 18px; border-top: 1px solid var(--line); padding-top: 18px; }
+#p-training .catalog-domain-content { width: 100%; min-width: 0; margin: 0 !important; }
+#p-training .catalog-domain-content > .catalog-grid { margin: 0; }
+#p-training .catalog-domain-content > .catalog-topic-list { margin: 0; }
+#p-training .catalog-domain-content .catalog-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 1180px) {
+  #p-training .catalog-domain-content .catalog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 650px) {
+  #p-training .catalog-domain[open] .catalog-domain-heading { min-height: 0; }
+  #p-training .catalog-domain-content-zone { margin-top: 12px; padding-top: 12px; }
+  #p-training .catalog-domain-content .catalog-grid { grid-template-columns: 1fr; gap: 10px; }
+}
+
+/* IA & outils professionnels : formation longue distincte et programmation active. */
+#p-training .catalog-cpf-feature { margin: 0 0 32px; padding: 22px; border: 1px solid #c89b7b; border-radius: 16px; background: linear-gradient(125deg, #fff8ef, #f8e7da); box-shadow: 0 8px 24px #7a432014; }
+#p-training .catalog-card--cpf { max-width: 760px; border-top-color: var(--wine); background: #fffdfa; }
+#p-training .catalog-cpf-facts { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 2px; }
+#p-training .catalog-cpf-facts span { padding: 5px 8px; border: 1px solid #dfc9b8; border-radius: 999px; color: var(--wine); background: #fff8ef; font-size: 11px; font-weight: 800; }
+#p-training .catalog-all-formations { margin-top: 6px; }
+#p-training .catalog-all-formations-heading { display: grid; gap: 7px; margin-bottom: 18px; padding-bottom: 17px; border-bottom: 1px solid var(--line); }
+#p-training .catalog-all-formations-heading h3 { margin: 0; color: var(--wine); font-family: Georgia, serif; font-size: clamp(25px, 3vw, 34px); font-weight: 500; line-height: 1.12; }
+#p-training .catalog-all-formations-heading p { margin: 0; color: var(--muted); font-size: 13px; }
+#p-training .catalog-environments { display: grid; gap: 4px; padding: 9px 10px; border-left: 2px solid var(--copper); background: #fff8ef; color: var(--muted); font-size: 11px; line-height: 1.35; }
+#p-training .catalog-environments strong { color: var(--wine); font-size: 11px; }
+#p-training .catalog-external-cta { margin: 28px 0 0; }
+#p-training .catalog-external-cta .btn { display: inline-flex; align-items: center; gap: 8px; }
+#p-training .catalog-cpf-detail ol { padding-left: 20px; }
+#p-training .catalog-cpf-detail ol li + li { margin-top: 6px; }
+@media (max-width: 650px) {
+  #p-training .catalog-cpf-feature { margin-bottom: 22px; padding: 14px; }
+  #p-training .catalog-cpf-facts span { font-size: 10px; }
+}
+
+/* Calendrier calculé depuis les sessions programmées du catalogue. */
+#p-training .catalog-sessions-calendar { margin-top: 34px; padding-top: 24px; border-top: 1px solid var(--line); }
+#p-training .catalog-calendar-heading { display: grid; gap: 5px; margin-bottom: 15px; }
+#p-training .catalog-calendar-heading h2 { margin: 0; color: var(--wine); font-family: Georgia, serif; font-size: clamp(25px, 3vw, 34px); font-weight: 500; line-height: 1.12; }
+#p-training .catalog-calendar-heading p:not(.catalog-upcoming-kicker) { margin: 0; color: var(--muted); font-size: 13px; }
+#p-training .catalog-calendar-months { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+#p-training .catalog-calendar-months button { padding: 8px 13px; border: 1px solid #dfc9b8; border-radius: 999px; background: #fffdfa; color: var(--wine); font-size: 12px; font-weight: 800; text-transform: capitalize; }
+#p-training .catalog-calendar-months button[aria-selected="true"] { border-color: var(--wine); background: var(--wine); color: #fff; }
+#p-training .catalog-calendar-panel { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+#p-training .catalog-calendar-session { display: grid; gap: 4px; padding: 11px; border: 1px solid #dfc9b8; border-radius: 10px; background: #fffdfa; color: var(--wine); text-align: left; }
+#p-training .catalog-calendar-session strong { font-size: 12px; text-transform: capitalize; }
+#p-training .catalog-calendar-session span { color: var(--muted); font-size: 11px; line-height: 1.35; }
+#p-training .catalog-practical-info .catalog-detail-facts { margin: 0; }
+@media (max-width: 650px) {
+  #p-training .catalog-sessions-calendar { margin-top: 24px; padding-top: 18px; }
+  #p-training .catalog-calendar-panel { grid-template-columns: 1fr; }
+}
+
