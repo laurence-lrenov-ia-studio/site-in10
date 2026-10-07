@@ -463,7 +463,7 @@ body .catalog-detail-facts dd{text-align:justify;text-align-last:left;hyphens:au
 #p-network .public-network-hero{
   position:relative;isolation:isolate;min-height:430px;padding:145px 0 78px;background:
     linear-gradient(92deg,rgba(48,30,24,.9),rgba(76,45,33,.72) 51%,rgba(76,45,33,.31)),
-    url('images/photo-18.jpg') center/cover no-repeat;
+    url('julie-audrey.png') center/cover no-repeat;
 }
 #p-network .public-network-hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(0,0,0,.15));mix-blend-mode:soft-light}
 #p-network .public-network-hero .public-network-hero-grid{position:relative;padding-left:clamp(0px,2vw,28px);border-left:1px solid rgba(242,199,172,.64)}
@@ -507,3 +507,7 @@ body .catalog-detail-facts dd{text-align:justify;text-align-last:left;hyphens:au
 @media(max-width:800px){.collective-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#p-network .public-collective-story{grid-template-columns:1fr;gap:24px}}
 @media(max-width:460px){.collective-grid{grid-template-columns:1fr;gap:24px}.collective-card>img{aspect-ratio:1}.public-section{padding-block:56px}}
 @media(prefers-reduced-motion:reduce){.collective-card{transition:none}}
+
+/* Cadrage du visuel du Collectif sous l’en-tête fixe. */
+#p-network .public-network-hero{background-position:center,center 120px;background-color:#493029}
+@media(max-width:760px){#p-network .public-network-hero{background-size:cover,100% auto;background-position:center,center 118px}}
