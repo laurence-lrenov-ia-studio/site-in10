@@ -152,7 +152,7 @@
     services.innerHTML = '<div class="catalog-all-formations-heading"><h3>Toutes les formations</h3><p>Retrouvez l’ensemble des ateliers disponibles, avec ou sans date programmée.</p></div><div class="catalog-grid"></div>';
     var grid = services.querySelector('.catalog-grid');
     programme.forEach(function (item) {
-      courseConfiguration[item.id] = { status: 'open', sessions: item.date ? [{ date: item.date }] : [], environments: item.environments || [], duration: item.duration };
+      courseConfiguration[item.id] = { status: 'open', sessions: item.date ? [{ date: item.date }] : [], duration: item.duration };
       var card = document.createElement('article');
       card.className = 'catalog-card'; card.dataset.course = item.id;
       card.innerHTML = '<h4>' + item.title + '</h4><p class="catalog-card-hook">' + item.hook + '</p><div class="catalog-meta"><span>' + item.duration + '</span></div>' + environments(item) + prices(item) + '<button class="catalog-detail-button" type="button" data-catalog-open="' + item.id + '" aria-label="Voir le détail : ' + item.title + '">Voir le détail →</button>';
@@ -244,8 +244,8 @@
       card.hidden = status === 'hidden';
       var sessions = config.sessions || [];
       var statusLabel = document.createElement('span');
-      statusLabel.className = 'catalog-course-status catalog-course-status--' + (sessions.length ? 'open' : 'unscheduled');
-      statusLabel.textContent = sessions.length ? 'Prochaine session : ' + formatShortDate(sessions[0].date) : 'À VENIR';
+      statusLabel.className = 'catalog-course-status catalog-course-status--' + status;
+      statusLabel.textContent = sessions.length > 1 ? 'Sessions : ' + sessions.map(function (session) { return formatShortDate(session.date); }).join(' et ') : sessions.length ? 'Prochaine session : ' + formatShortDate(sessions[0].date) : status === 'upcoming' ? 'À venir' : '';
       if (statusLabel.textContent) card.querySelector('h4').insertAdjacentElement('afterend', statusLabel);
       var timedSessions = sessions.filter(function (session) { return session.time; });
       if (timedSessions.length) {
@@ -435,14 +435,10 @@
 
   function getScheduledSessions() {
     var sessions = [];
-    // Toutes les configurations actives, indépendamment du domaine ou du filtre affiché.
-    Object.keys(courseConfiguration).forEach(function (id) {
-      var config = courseConfiguration[id];
-      var card = root.querySelector('.catalog-card[data-course="' + id + '"]');
-      // Les anciennes configurations IA sans carte ne font plus partie du catalogue.
-      if (!card || config.status === 'hidden') return;
+    root.querySelectorAll('.catalog-card[data-course]').forEach(function (card) {
+      var config = courseConfiguration[card.dataset.course] || {};
       (config.sessions || []).forEach(function (session) {
-        sessions.push({ date: session.date, time: session.time || '', environments: config.environments || [], label: session.label || '', title: card.querySelector('h4').textContent, domain: card.closest('[data-catalog-universe]').dataset.catalogUniverse });
+        sessions.push({ date: session.date, time: session.time || '', label: session.label || '', title: card.querySelector('h4').textContent, domain: card.closest('[data-catalog-universe]').dataset.catalogUniverse });
       });
     });
     sessions.sort(function (a, b) { return a.date.localeCompare(b.date); });
@@ -473,7 +469,7 @@
       groups.get(key).forEach(function (session) {
         var button = document.createElement('button');
         button.type = 'button'; button.className = 'catalog-calendar-session'; button.dataset.catalogOpenDomain = session.domain;
-        button.innerHTML = '<strong>' + formatShortDate(session.date) + '</strong><span>' + session.title + (session.label ? ' — ' + session.label : '') + (session.time ? ' · ' + session.time : '') + (session.environments.length ? ' · ' + session.environments.join(' / ') : '') + '</span>';
+        button.innerHTML = '<strong>' + formatShortDate(session.date) + '</strong><span>' + session.title + (session.label ? ' — ' + session.label : '') + (session.time ? ' · ' + session.time : '') + '</span>';
         button.addEventListener('click', function () {
           var filter = root.querySelector('[data-catalog-filter="' + session.domain + '"]');
           if (filter) filter.click();

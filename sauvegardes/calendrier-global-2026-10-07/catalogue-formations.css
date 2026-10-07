@@ -287,6 +287,3 @@
   #p-training .catalog-calendar-panel { grid-template-columns: 1fr; }
 }
 
-
-/* Statut discret des formations sans session programmée. */
-#p-training .catalog-card .catalog-course-status--unscheduled { border-color: #ddd3c9; background: #f7f3ee; color: var(--muted); font-weight: 700; }
