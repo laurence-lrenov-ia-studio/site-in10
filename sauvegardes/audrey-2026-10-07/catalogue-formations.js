@@ -9,7 +9,7 @@
   var count = root.querySelector('#catalog-count');
   var previousOverflow;
 
-  // Source unique des statuts et des sessions. Les horaires sont affichés lorsqu’ils sont renseignés.
+  // Source unique des statuts et des sessions. Aucune heure n'est renseignée ni affichée.
   var courseConfiguration = {
     'personnaliser-ia': { status: 'open', sessions: [{ date: '2026-10-20' }] }, 'personnaliser-claude': { status: 'open', sessions: [{ date: '2026-10-22' }] },
     'contenus-ia': { status: 'open', sessions: [{ date: '2026-11-17' }] }, 'contenus-claude': { status: 'open', sessions: [{ date: '2026-11-19' }] },
@@ -21,7 +21,7 @@
     'communication-ia': { status: 'open', sessions: [] }, 'pilotage-ia': { status: 'open', sessions: [] },
     'generateur-contenus': { status: 'open', sessions: [] }, 'generateur-visuels': { status: 'open', sessions: [] }, 'tableau-pilotage': { status: 'open', sessions: [] }, 'mini-outil': { status: 'open', sessions: [] },
     'dashboard-notion': { status: 'open', sessions: [{ date: '2026-11-12' }] }, 'rentabilite-tpe-ia': { status: 'open', sessions: [], duration: '36 h' }, 'videos-smartphone': { status: 'open', sessions: [] },
-    'mentions-devis-factures': { status: 'open', sessions: [{ date: '2026-10-27', time: '14h–16h' }, { date: '2026-11-03', time: '14h–16h' }] }, 'rgpd-cnil-registre': { status: 'open', sessions: [{ date: '2026-10-29', time: '14h–16h' }, { date: '2026-11-05', time: '14h–16h' }] }, 'sous-traitants-prestataires': { status: 'open', sessions: [{ date: '2026-10-31', time: '14h–16h' }, { date: '2026-11-17', time: '14h–16h' }] },
+    'mentions-devis-factures': { status: 'open', sessions: [] }, 'rgpd-cnil-registre': { status: 'open', sessions: [] }, 'sous-traitants-prestataires': { status: 'open', sessions: [] },
     'sst-initial': { status: 'open', sessions: [] }, 'mac-sst': { status: 'open', sessions: [] }, 'referent-sst-duerp': { status: 'open', sessions: [] }, 'duerp': { status: 'open', sessions: [] }
   };
   var validStatuses = ['open', 'upcoming', 'hidden'];
@@ -247,18 +247,6 @@
       statusLabel.className = 'catalog-course-status catalog-course-status--' + status;
       statusLabel.textContent = sessions.length > 1 ? 'Sessions : ' + sessions.map(function (session) { return formatShortDate(session.date); }).join(' et ') : sessions.length ? 'Prochaine session : ' + formatShortDate(sessions[0].date) : status === 'upcoming' ? 'À venir' : '';
       if (statusLabel.textContent) card.querySelector('h4').insertAdjacentElement('afterend', statusLabel);
-      var timedSessions = sessions.filter(function (session) { return session.time; });
-      if (timedSessions.length) {
-        var template = root.querySelector('#catalog-template-' + card.dataset.course);
-        if (template) {
-          var sessionBlock = document.createElement('section');
-          sessionBlock.className = 'catalog-detail-block';
-          sessionBlock.innerHTML = '<h3>Prochaines sessions</h3><ul>' + timedSessions.map(function (session) {
-            return '<li>' + formatDate(session.date) + ' · ' + session.time + '</li>';
-          }).join('') + '</ul>';
-          template.content.querySelector('.catalog-detail-lead').insertAdjacentElement('afterend', sessionBlock);
-        }
-      }
       if (config.intersession) {
         var session = document.createElement('p');
         session.className = 'catalog-next-session';
@@ -438,7 +426,7 @@
     root.querySelectorAll('.catalog-card[data-course]').forEach(function (card) {
       var config = courseConfiguration[card.dataset.course] || {};
       (config.sessions || []).forEach(function (session) {
-        sessions.push({ date: session.date, time: session.time || '', label: session.label || '', title: card.querySelector('h4').textContent, domain: card.closest('[data-catalog-universe]').dataset.catalogUniverse });
+        sessions.push({ date: session.date, label: session.label || '', title: card.querySelector('h4').textContent, domain: card.closest('[data-catalog-universe]').dataset.catalogUniverse });
       });
     });
     sessions.sort(function (a, b) { return a.date.localeCompare(b.date); });
@@ -469,7 +457,7 @@
       groups.get(key).forEach(function (session) {
         var button = document.createElement('button');
         button.type = 'button'; button.className = 'catalog-calendar-session'; button.dataset.catalogOpenDomain = session.domain;
-        button.innerHTML = '<strong>' + formatShortDate(session.date) + '</strong><span>' + session.title + (session.label ? ' — ' + session.label : '') + (session.time ? ' · ' + session.time : '') + '</span>';
+        button.innerHTML = '<strong>' + formatShortDate(session.date) + '</strong><span>' + session.title + (session.label ? ' — ' + session.label : '') + '</span>';
         button.addEventListener('click', function () {
           var filter = root.querySelector('[data-catalog-filter="' + session.domain + '"]');
           if (filter) filter.click();
