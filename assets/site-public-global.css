@@ -526,3 +526,170 @@ body .catalog-detail-facts dd{text-align:justify;text-align-last:left;hyphens:au
 @media(max-width:760px){
   #p-network .public-network-hero{background-image:linear-gradient(90deg,rgba(255,250,245,.92),rgba(255,250,245,.78)),url('images/hero-collectif.jpg');background-position:center,center}
 }
+
+/* ==========================================================================
+   Passe esthétique — légèreté, transparence, réseau
+   Couche de finition uniquement : aucune structure, aucun texte, aucun lien
+   n'est modifié. Pour revenir en arrière, supprimer ce bloc.
+   ========================================================================== */
+:root{
+  --a-line:rgba(117,65,48,.15);
+  --a-line-soft:rgba(117,65,48,.09);
+  --a-eyebrow:#94593f;
+  --a-shadow:0 1px 2px rgba(60,37,25,.03),0 12px 30px -16px rgba(60,37,25,.13);
+  --a-shadow-hover:0 1px 2px rgba(60,37,25,.04),0 18px 36px -18px rgba(60,37,25,.17);
+  --a-ease:.35s cubic-bezier(.22,.61,.36,1);
+}
+
+/* 1 — En-tête : plus transparent, plus compact au défilement ------------- */
+#hdr{background:rgba(255,250,245,.9);-webkit-backdrop-filter:blur(16px) saturate(1.15);backdrop-filter:blur(16px) saturate(1.15);border-bottom:1px solid rgba(117,65,48,.07);box-shadow:none;transition:background .4s ease,border-color .4s ease}
+#hdr.scrolled{background:rgba(255,250,245,.94);border-bottom-color:rgba(117,65,48,.1);box-shadow:none}
+#hdr .brand img{transition:width .4s cubic-bezier(.22,.61,.36,1)}
+#hdr nav button{transition:background .25s ease,color .25s ease}
+@media(min-width:1001px){#hdr.scrolled .brand img{width:158px!important}}
+
+/* 2 — Rythme et lisibilité --------------------------------------------- */
+/* Surtitres : le pêche clair ne se lit pas sur fond ivoire. */
+#p-home .public-section .public-eyebrow,#p-home .public-end-cta .public-eyebrow,
+#p-enterprise .public-section .public-eyebrow,#p-network .public-section .public-eyebrow,
+#p-join .section .kicker,#p-training .catalog-main .kicker,#p-training .catalog-upcoming-kicker{color:var(--a-eyebrow)}
+#p-home .public-eyebrow,#p-enterprise .public-eyebrow,#p-network .public-eyebrow{letter-spacing:.2em;font-weight:800}
+/* Les bandeaux ne viennent plus buter contre l'en-tête. */
+@media(min-width:1001px){
+  #p-network .public-network-hero{padding-top:184px;padding-bottom:96px}
+  #p-training .hero.forma .hero-in{padding-top:186px}
+}
+@media(max-width:1000px){
+  #p-training .hero.forma .hero-in,#p-join .hero.join .hero-in{padding-top:156px}
+  #p-network .public-network-hero{padding-top:158px}
+}
+/* Filets plus discrets. */
+#p-home .public-card,#p-enterprise .public-card,#p-home .public-card:first-child,#p-enterprise .public-card:first-child{border-color:var(--a-line)}
+#p-home .public-card:first-child,#p-enterprise .public-card:first-child{border-left-color:transparent}
+#p-enterprise .public-card,#p-enterprise .public-card:first-child{background:none}
+#p-enterprise .public-card:not(:last-child)::after{opacity:.5}
+#p-home .public-home-story .public-story-quote,#p-network .public-collective-signature{border-top-color:var(--a-line)}
+#p-home .public-end-cta,#p-network .public-map-intro{border-top-color:var(--a-line)}
+#p-enterprise .public-audit-aside{border-left-color:var(--a-line)}
+#p-enterprise .public-audit-aside li{border-top-color:var(--a-line-soft)}
+#p-enterprise .public-report{border-left-color:rgba(184,117,84,.55)}
+#p-network .france-copy{border-left-color:var(--a-line)}
+#p-network .remote-callout{border-top-color:var(--a-line)!important;border-bottom-color:var(--a-line)!important}
+#p-network .info-fiche{border-top-color:var(--a-line)}
+#p-network .public-map-intro p{border-left-color:rgba(173,120,91,.55)}
+
+/* Textes courts en colonnes étroites : l'alignement à gauche évite les trous de justification. */
+#p-training .catalog-domain-heading p,#p-training .catalog-topic-heading p,#p-training .catalog-card-hook,.mode-card p,.step p{text-align:left;hyphens:none}
+
+/* 3 — Boutons et survols : moins de mouvement, moins d'ombre ------------- */
+.public-button{transition:background .25s ease,border-color .25s ease,color .25s ease,transform .3s ease,box-shadow .3s ease}
+.public-button:hover{transform:translateY(-1px)}
+.public-button-primary{box-shadow:0 1px 2px rgba(85,42,28,.08)}
+.public-button-primary:hover{box-shadow:0 8px 18px -10px rgba(85,42,28,.3)}
+.btn{border-radius:12px;transition:background .25s ease,border-color .25s ease,transform .3s ease,box-shadow .3s ease}
+.primary{background:#a5613f;box-shadow:0 1px 2px rgba(60,32,20,.12)}
+.primary:hover{background:#94553a;transform:translateY(-1px);box-shadow:0 8px 18px -10px rgba(60,32,20,.4)}
+.glass{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.34);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.glass:hover{background:rgba(255,255,255,.18)}
+.proof:hover,.tag:hover,.card:hover,.step:hover{transform:translateY(-2px)}
+#p-home .public-card:hover,#p-enterprise .public-card:hover{transform:translateY(-2px)}
+.page.active{animation-duration:.55s}
+@keyframes page{from{opacity:0;transform:translateY(6px)}}
+.reveal{transform:translateY(14px);transition:opacity .9s cubic-bezier(.22,.61,.36,1),transform .9s cubic-bezier(.22,.61,.36,1)}
+
+/* 4 — Accueil : bandeau d'accroche plus translucide ----------------------- */
+#p-home .public-home-band{background:rgba(58,38,32,.66);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border-top:1px solid rgba(255,250,245,.26)}
+#p-home .public-home-story .public-story-text{border-color:var(--a-line-soft);border-radius:18px;background:rgba(255,250,245,.55)}
+
+/* 5 — Accompagnement ---------------------------------------------------- */
+#p-enterprise .public-enterprise-hero .public-inner-hero-content{border-left-color:rgba(247,214,189,.38)}
+#p-enterprise .public-whatsapp{border-color:rgba(117,65,48,.26);border-radius:18px;background:rgba(251,243,235,.6)}
+.public-form{padding:clamp(24px,3vw,40px);border-color:var(--a-line-soft);border-radius:22px;background:rgba(255,255,255,.88);box-shadow:var(--a-shadow)}
+.public-field input,.public-field textarea{border-color:rgba(117,65,48,.2);border-radius:12px;background:#fffefb;transition:border-color .25s ease,box-shadow .25s ease}
+
+/* 6 — Collectif : portraits ---------------------------------------------- */
+.collective-grid{gap:34px 26px;margin-top:44px}
+.collective-card{border-color:var(--a-line-soft);border-radius:20px;background:rgba(255,255,255,.55);transition:box-shadow var(--a-ease),transform var(--a-ease),background var(--a-ease)}
+.collective-card:hover{background:rgba(255,255,255,.8);box-shadow:var(--a-shadow-hover)}
+.collective-card>img{transition:transform .8s cubic-bezier(.22,.61,.36,1)}
+.collective-card:hover>img{transform:scale(1.025)}
+.collective-card-body{padding:24px 22px 28px}
+.collective-card h3{margin-bottom:10px;font-size:24px}
+.collective-card .collective-territory{margin-top:20px;padding-top:15px;border-top-color:var(--a-line-soft)}
+#p-network .public-network-hero .public-network-hero-grid{border-left-color:rgba(117,65,48,.18)}
+
+/* 7 — Rejoindre ---------------------------------------------------------- */
+#p-join{background:#faf4ed}
+#p-join .hero.join .hero-in .copy{max-width:900px}
+.mode-card{min-height:380px;border-radius:24px;box-shadow:var(--a-shadow);filter:none;transition:box-shadow var(--a-ease),transform var(--a-ease)}
+.mode-card:hover{transform:translateY(-3px);box-shadow:var(--a-shadow-hover)}
+.mode-card::before{background:linear-gradient(180deg,rgba(20,12,8,0) 0%,rgba(20,12,8,0) 38%,rgba(33,21,16,.78) 100%)!important}
+.mode-card.vc4,.mode-card.vc5,.mode-card.vc6{background-size:auto 130%!important;background-repeat:no-repeat}
+.mode-card.vc4{background-position:8% 0!important}
+.mode-card.vc5{background-position:100% 0!important}
+.mode-card.vc6{background-size:auto 120%!important;background-position:50% 0!important}
+.mode-card h3{font-size:28px}
+.mode-card p{color:rgba(255,255,255,.86)}
+.join-extra-grid{padding:clamp(44px,5vw,68px) 0;border-radius:0;border-top:1px solid var(--a-line);border-bottom:1px solid var(--a-line);background:none;box-shadow:none;gap:clamp(36px,6vw,96px)}
+.join-extra-list p{border-bottom-color:var(--a-line-soft)}
+.statement{background:#33221c}
+.statement .section{position:relative;gap:clamp(36px,5vw,72px)}
+.statement .big{font-size:clamp(34px,3.7vw,52px);line-height:1.08}
+.statement p{color:rgba(255,250,245,.72)}
+.cta{border-radius:26px;padding:clamp(28px,4vw,48px);background:linear-gradient(135deg,#6a3b2c,#523024);box-shadow:0 22px 44px -26px rgba(50,30,22,.55)}
+.cta .btn.glass{background:rgba(255,255,255,.1)}
+
+/* 8 — Formations --------------------------------------------------------- */
+#p-training .catalog-filter{border-color:rgba(117,65,48,.18);background:rgba(255,250,245,.7);transition:background .25s ease,border-color .25s ease,color .25s ease}
+#p-training .catalog-filter[aria-pressed="true"]{box-shadow:none}
+#p-training .catalog-summary{border-color:var(--a-line-soft)}
+#p-training .catalog-domain,#p-training .catalog-topic{border-color:var(--a-line-soft);border-radius:18px;background:rgba(255,253,250,.78);box-shadow:var(--a-shadow);transition:box-shadow var(--a-ease),transform var(--a-ease)}
+#p-training .catalog-domain:hover{box-shadow:var(--a-shadow-hover)}
+#p-training .catalog-domain[open] .catalog-domain-heading,#p-training .catalog-topic[open] .catalog-topic-heading{background:linear-gradient(135deg,rgba(255,250,245,.9),rgba(247,235,223,.7))}
+#p-training .catalog-domain-heading{padding:26px 48px 26px 24px}
+#p-training .catalog-domain-content-zone{border-top-color:var(--a-line-soft);margin-top:26px;padding-top:26px}
+#p-training .catalog-card{border-color:var(--a-line-soft);border-radius:14px;background:rgba(255,253,250,.88);box-shadow:var(--a-shadow);transition:transform var(--a-ease),box-shadow var(--a-ease)}
+#p-training .catalog-card:hover{transform:translateY(-2px);box-shadow:var(--a-shadow-hover)}
+#p-training .catalog-card[data-catalog-status="upcoming"]{border-color:rgba(184,117,84,.3);box-shadow:var(--a-shadow)}
+#p-training .catalog-card--funding,#p-training .catalog-card--specific{box-shadow:var(--a-shadow);animation:none}
+#p-training .catalog-cpf-feature,#p-training .catalog-funding-feature,#p-training .catalog-specific-feature{border-color:rgba(184,117,84,.35);border-radius:18px;box-shadow:none}
+#p-training .catalog-upcoming{border-color:var(--a-line-soft)}
+#p-training .catalog-upcoming button,#p-training .catalog-calendar-session,#p-training .catalog-calendar-months button{border-color:var(--a-line-soft);border-radius:12px;background:rgba(255,253,250,.8);transition:border-color .25s ease,background .25s ease}
+#p-training .catalog-upcoming button:hover,#p-training .catalog-calendar-session:hover{border-color:rgba(184,117,84,.5);background:#fffaf5}
+#p-training .catalog-calendar-months button{border-radius:999px}
+#p-training .catalog-sessions-calendar{border-top-color:var(--a-line-soft)}
+#p-training .catalog-environments{background:rgba(255,248,239,.7)}
+#p-training .catalog-cta{border-radius:24px;padding:36px}
+#p-training .catalog-dialog{border-color:var(--a-line-soft);border-radius:24px;box-shadow:0 30px 70px -30px rgba(33,21,17,.45)}
+#p-training .catalog-detail-facts{border-color:var(--a-line-soft)}
+
+/* 9 — Pied de page : plus profond, moins massif + trame réseau ------------ */
+footer{position:relative;overflow:hidden;background:#2b1d17;border-top:1px solid rgba(255,250,245,.05);padding:64px 22px 40px;color:rgba(255,250,245,.6)}
+footer::before{content:"";position:absolute;inset:0;pointer-events:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 260' fill='none'%3E%3Cg stroke='%23e4ad86' stroke-opacity='.16' stroke-width='1'%3E%3Cpath d='M300 40l140 50 120-30 70 110-120 90-130-60-80-160m140 50l-10 140m130-170l-120 170'/%3E%3C/g%3E%3Cg fill='%23e4ad86' fill-opacity='.24'%3E%3Ccircle cx='300' cy='40' r='3'/%3E%3Ccircle cx='440' cy='90' r='3.5'/%3E%3Ccircle cx='560' cy='60' r='3'/%3E%3Ccircle cx='630' cy='170' r='3'/%3E%3Ccircle cx='510' cy='260' r='3'/%3E%3Ccircle cx='380' cy='200' r='3.5'/%3E%3Ccircle cx='430' cy='230' r='2.5'/%3E%3C/g%3E%3C/svg%3E") right bottom/min(300px,60%) auto no-repeat}
+footer .foot{position:relative;gap:34px}
+footer .foot button{color:rgba(255,250,245,.6);transition:color .25s ease}
+footer .foot button:hover{color:#fff}
+
+/* 10 — Réseau très discret sur la bande sombre de « Rejoindre » ----------- */
+.statement{position:relative;overflow:hidden}
+.statement::before{content:"";position:absolute;inset:0;pointer-events:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 260' fill='none'%3E%3Cg stroke='%23e4ad86' stroke-opacity='.11' stroke-width='1'%3E%3Cpath d='M300 40l140 50 120-30 70 110-120 90-130-60-80-160m140 50l-10 140m130-170l-120 170'/%3E%3C/g%3E%3Cg fill='%23e4ad86' fill-opacity='.2'%3E%3Ccircle cx='300' cy='40' r='3'/%3E%3Ccircle cx='440' cy='90' r='3.5'/%3E%3Ccircle cx='560' cy='60' r='3'/%3E%3Ccircle cx='630' cy='170' r='3'/%3E%3Ccircle cx='510' cy='260' r='3'/%3E%3Ccircle cx='380' cy='200' r='3.5'/%3E%3C/g%3E%3C/svg%3E") right center/min(620px,62%) auto no-repeat}
+.statement>.section{position:relative;z-index:1}
+
+/* 11 — Mobile : mêmes principes, marges adaptées -------------------------- */
+@media(max-width:900px){
+  .join-extra-grid{padding:40px 0}
+  .collective-grid{gap:26px 18px}
+}
+@media(max-width:650px){
+  .join-extra-grid{padding:34px 0}
+  .mode-card{min-height:340px}
+  .statement .big{font-size:clamp(32px,9vw,42px)}
+  footer{padding:52px 22px 34px}
+  #p-training .catalog-domain-heading{padding:20px 44px 20px 18px}
+  #p-training .catalog-cta{padding:26px}
+}
+@media(max-width:460px){.collective-card-body{padding:22px 20px 26px}}
+@media(prefers-reduced-motion:reduce){
+  #hdr,#hdr .brand img,.collective-card,.collective-card>img,.mode-card,.btn,.public-button,#p-training .catalog-card,#p-training .catalog-domain{transition:none}
+  .reveal{transition:opacity .01s}
+}
