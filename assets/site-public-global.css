@@ -508,7 +508,21 @@ body .catalog-detail-facts dd{text-align:justify;text-align-last:left;hyphens:au
 @media(max-width:460px){.collective-grid{grid-template-columns:1fr;gap:24px}.collective-card>img{aspect-ratio:1}.public-section{padding-block:56px}}
 @media(prefers-reduced-motion:reduce){.collective-card{transition:none}}
 
-/* Fond graphique discret, limité au bandeau du Collectif. */
+/* Photo et voile doux, limités au bandeau du Collectif. */
 #p-network .public-network-hero{
-  background:#493029 url('images/collectif-reseau.svg') center/cover no-repeat;
+  background:linear-gradient(90deg,rgba(255,250,245,.94),rgba(255,250,245,.83) 48%,rgba(255,250,245,.28)),url('images/hero-collectif.jpg') center 55%/cover no-repeat;
+  color:#493029;
+}
+#p-network .public-network-hero h1{color:#493029}
+#p-network .public-network-hero h1 em{color:#80523d}
+#p-network .public-network-hero .public-eyebrow{color:#80523d}
+#p-network .public-network-hero .public-intro{color:#493029}
+#p-network .public-network-hero .public-network-hero-grid{border-left-color:rgba(117,65,48,.25)}
+#p-network .public-network-hero::after{
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 600' fill='none'%3E%3Cg stroke='%23754130' stroke-opacity='.14' stroke-width='1'%3E%3Cpath d='m790 90 220 60 190-40 170 180-210 170-210-90-160-280m220 60-60 220 210 90 40-350m-410 0 160 260'/%3E%3C/g%3E%3Cg fill='%23754130' fill-opacity='.2'%3E%3Ccircle cx='790' cy='90' r='3'/%3E%3Ccircle cx='1010' cy='150' r='4'/%3E%3Ccircle cx='1200' cy='110' r='3'/%3E%3Ccircle cx='1370' cy='290' r='4'/%3E%3Ccircle cx='1160' cy='460' r='3'/%3E%3Ccircle cx='950' cy='370' r='4'/%3E%3C/g%3E%3C/svg%3E") center/cover no-repeat;
+  mix-blend-mode:normal;
+  pointer-events:none;
+}
+@media(max-width:760px){
+  #p-network .public-network-hero{background-image:linear-gradient(90deg,rgba(255,250,245,.92),rgba(255,250,245,.78)),url('images/hero-collectif.jpg');background-position:center,center}
 }
