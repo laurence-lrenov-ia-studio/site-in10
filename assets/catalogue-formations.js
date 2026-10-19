@@ -492,6 +492,178 @@
     root.querySelector('#catalogue-formations .catalog-domain-content-zone').insertAdjacentElement('afterend', section);
   }
 
+  // Correspondance stable avec les identifiants publiés par le Hub.
+  var hubCourseIds = ['mentions-devis-factures', 'rgpd-cnil-registre', 'sous-traitants-prestataires', 'cpf-rs7311', 'services-personnaliser-ia', 'services-documents-ia', 'services-notion-base', 'services-mission-client', 'services-notion-dashboard', 'services-donnees-ia', 'services-google-dashboard', 'services-notebooklm', 'services-priorites', 'contenus-ia', 'visuels-ia', 'routines-ia', 'espace-notion', 'generateur-contenus', 'generateur-visuels', 'tableau-pilotage', 'mini-outil', 'ia-methodes', 'communication-ia', 'pilotage-ia', 'sst-initial', 'mac-sst', 'referent-sst-duerp', 'duerp', 'videos-smartphone'];
+  var hubEquivalentCards = {
+    'FOR-005': ['personnaliser-ia', 'personnaliser-claude'],
+    'FOR-006': ['documents-ia', 'documents-claude'],
+    'FOR-009': ['dashboard-notion'],
+    'FOR-010': ['donnees-ia', 'donnees-claude'],
+    'FOR-014': ['contenus-ia', 'contenus-claude'],
+    'FOR-015': ['visuels-ia']
+  };
+  function hubValue(record, key) {
+    return record && (record[key] !== undefined ? record[key] : record[key.toLowerCase()]);
+  }
+  function hubText(record, key) {
+    var value = hubValue(record, key);
+    return value === null || value === undefined ? '' : String(value).trim();
+  }
+  function hubDate(value) {
+    var match = String(value || '').match(/^(\d{4}-\d{2}-\d{2})/);
+    if (!match || !formatDate(match[1])) return '';
+    return match[1];
+  }
+  function hubDomain(record) {
+    var category = hubText(record, 'CATEGORIE').toLowerCase();
+    if (/santé|sécurité|prévention/.test(category)) return 'prevention';
+    if (/communication|image/.test(category)) return 'communication';
+    if (/gestion|administratif|conformité/.test(category)) return 'administratif';
+    return 'ia';
+  }
+  function applyHubPublicData(formations, sessions) {
+    if (!Array.isArray(formations) || !Array.isArray(sessions)) return;
+    var published = formations.filter(function (item) { return hubText(item, 'ID_FORMATION') && hubText(item, 'TITRE_FORMATION'); });
+    if (!published.length && !sessions.length) return;
+    var today = new Date();
+    var todayKey = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+    var cardsByHubId = new Map();
+    published.forEach(function (item) {
+      var hubId = hubText(item, 'ID_FORMATION');
+      var index = /^FOR-(\d+)$/.exec(hubId);
+      var knownId = index && hubCourseIds[Number(index[1]) - 1];
+      var equivalents = (knownId ? [knownId] : []).concat(hubEquivalentCards[hubId] || []);
+      var card = equivalents.map(function (id) { return root.querySelector('.catalog-card[data-course="' + id + '"]'); }).filter(Boolean)[0];
+      if (!card) card = root.querySelector('.catalog-card[data-course="' + hubId + '"]');
+      var courseId = card ? card.dataset.course : hubId;
+      if (!card) {
+        var domain = hubDomain(item);
+        var grid = root.querySelector('[data-catalog-universe="' + domain + '"] .catalog-grid');
+        if (!grid) grid = root.querySelector('[data-catalog-universe="ia"] .catalog-grid');
+        if (!grid) grid = root.querySelector('.catalog-topic-grid');
+        if (!grid) return;
+        card = document.createElement('article');
+        card.className = 'catalog-card';
+        card.dataset.course = courseId;
+        var eyebrow = document.createElement('div'); eyebrow.className = 'catalog-eyebrow'; card.appendChild(eyebrow);
+        var title = document.createElement('h4'); card.appendChild(title);
+        var hook = document.createElement('p'); hook.className = 'catalog-card-hook'; card.appendChild(hook);
+        var meta = document.createElement('div'); meta.className = 'catalog-meta'; card.appendChild(meta);
+        var button = document.createElement('button'); button.type = 'button'; button.className = 'catalog-detail-button'; button.dataset.catalogOpen = courseId; button.textContent = 'Voir le détail →'; button.setAttribute('aria-haspopup', 'dialog'); button.setAttribute('aria-controls', 'catalog-details'); card.appendChild(button);
+        grid.appendChild(card);
+      }
+      equivalents.forEach(function (id) {
+        var duplicate = root.querySelector('.catalog-card[data-course="' + id + '"]');
+        if (duplicate && duplicate !== card) duplicate.remove();
+      });
+      var titleText = hubText(item, 'TITRE_FORMATION');
+      card.querySelector('h4').textContent = titleText;
+      var cardHook = card.querySelector('.catalog-card-hook');
+      if (cardHook) cardHook.textContent = hubText(item, 'DESCRIPTION_COURTE');
+      var cardCategory = card.querySelector('.catalog-eyebrow');
+      if (cardCategory && hubText(item, 'CATEGORIE')) cardCategory.textContent = hubText(item, 'CATEGORIE');
+      var cardMeta = card.querySelector('.catalog-meta');
+      if (cardMeta) {
+        cardMeta.replaceChildren();
+        ['DUREE_AFFICHEE', 'FORMAT_PAR_DEFAUT'].forEach(function (key) {
+          var value = hubText(item, key);
+          if (value) { var span = document.createElement('span'); span.textContent = value; cardMeta.appendChild(span); }
+        });
+      }
+      var cardPrices = card.querySelector('.catalog-card-prices');
+      if (cardPrices) {
+        var prices = cardPrices.querySelectorAll('strong');
+        var publicPrice = hubText(item, 'TARIF_PUBLIC_TTC');
+        var memberPrice = hubText(item, 'TARIF_MEMBRE_TTC');
+        if (/^\d+(?:[.,]\d+)?$/.test(publicPrice)) publicPrice += ' € TTC';
+        if (/^\d+(?:[.,]\d+)?$/.test(memberPrice)) memberPrice += ' € TTC';
+        if (prices[0] && publicPrice) prices[0].textContent = publicPrice;
+        if (prices[1] && memberPrice) prices[1].textContent = memberPrice;
+      }
+      var openButton = card.querySelector('[data-catalog-open]');
+      if (openButton) openButton.setAttribute('aria-label', 'Voir le détail : ' + titleText);
+      var template = root.querySelector('#catalog-template-' + courseId);
+      if (!template) { template = document.createElement('template'); template.id = 'catalog-template-' + courseId; root.appendChild(template); }
+      var article = document.createElement('article'); article.className = 'catalog-detail';
+      var detailTitle = document.createElement('h2'); detailTitle.textContent = titleText; article.appendChild(detailTitle);
+      var facts = [['DUREE_AFFICHEE', 'Durée'], ['FORMAT_PAR_DEFAUT', 'Format'], ['TARIF_PUBLIC_TTC', 'Tarif public TTC'], ['TARIF_MEMBRE_TTC', 'Tarif membre TTC'], ['FINANCEMENT', 'Financement'], ['FORMATEUR', 'Formation proposée par']];
+      var factList = document.createElement('dl'); factList.className = 'catalog-detail-facts';
+      facts.forEach(function (entry) {
+        var value = hubText(item, entry[0]);
+        if (!value) return;
+        if (/^TARIF_/.test(entry[0]) && /^\d+(?:[.,]\d+)?$/.test(value)) value += ' € TTC';
+        var pair = document.createElement('div');
+        var term = document.createElement('dt'); term.textContent = entry[1];
+        var description = document.createElement('dd'); description.textContent = value;
+        pair.append(term, description); factList.appendChild(pair);
+      });
+      if (factList.childElementCount) article.appendChild(factList);
+      [['DESCRIPTION_DETAILLEE', 'À quoi sert cette formation ?'], ['PENDANT_ATELIER', 'Ce que vous allez apprendre'], ['VOUS_REPARTEZ_AVEC', 'Vous repartez avec'], ['PUBLIC_CIBLE', 'Pour qui ?'], ['PREREQUIS', 'Prérequis']].forEach(function (entry) {
+        var value = hubText(item, entry[0]);
+        if (!value) return;
+        var block = document.createElement('section'); block.className = 'catalog-detail-block';
+        var heading = document.createElement('h3'); heading.textContent = entry[1];
+        var paragraph = document.createElement('p'); paragraph.textContent = value;
+        block.append(heading, paragraph); article.appendChild(block);
+      });
+      var registration = hubText(item, 'LIEN_INSCRIPTION');
+      if (/^https:\/\//.test(registration)) {
+        var link = document.createElement('a'); link.href = registration; link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = 'Voir le programme et s’inscrire ↗';
+        var wrapper = document.createElement('p'); wrapper.className = 'catalog-external-cta'; wrapper.appendChild(link); article.appendChild(wrapper);
+      }
+      template.content.replaceChildren(article);
+      cardsByHubId.set(hubId, card);
+      if (!courseConfiguration[courseId]) courseConfiguration[courseId] = { status: 'open', sessions: [] };
+      else courseConfiguration[courseId].status = 'open';
+    });
+    sessions.forEach(function (session) {
+      var hubId = hubText(session, 'ID_FORMATION');
+      if (cardsByHubId.has(hubId)) return;
+      var index = /^FOR-(\d+)$/.exec(hubId);
+      var knownId = index && hubCourseIds[Number(index[1]) - 1];
+      var equivalents = (knownId ? [knownId] : []).concat(hubEquivalentCards[hubId] || []);
+      var card = equivalents.map(function (id) { return root.querySelector('.catalog-card[data-course="' + id + '"]'); }).filter(Boolean)[0];
+      if (card) cardsByHubId.set(hubId, card);
+    });
+    var byId = new Map();
+    sessions.forEach(function (session) {
+      var hubId = hubText(session, 'ID_FORMATION');
+      var date = hubDate(hubValue(session, 'DATE_SESSION'));
+      if (!hubId || !date || date < todayKey) return;
+      if (!byId.has(hubId)) byId.set(hubId, []);
+      var start = hubText(session, 'HEURE_DEBUT');
+      var end = hubText(session, 'HEURE_FIN');
+      byId.get(hubId).push({ date: date, time: start && end ? start + '–' + end : start, label: hubText(session, 'LIBELLE_SESSION') });
+    });
+    byId.forEach(function (items, hubId) {
+      var card = cardsByHubId.get(hubId);
+      if (!card) return;
+      items.sort(function (a, b) { return a.date.localeCompare(b.date); });
+      if (!courseConfiguration[card.dataset.course]) courseConfiguration[card.dataset.course] = { status: 'open', sessions: [] };
+      courseConfiguration[card.dataset.course].sessions = items;
+    });
+    cardsByHubId.forEach(function (card) {
+      var config = courseConfiguration[card.dataset.course];
+      var label = card.querySelector('.catalog-course-status');
+      if (!label) { label = document.createElement('span'); card.querySelector('h4').after(label); }
+      label.className = 'catalog-course-status catalog-course-status--' + (config.sessions.length ? 'open' : 'unscheduled');
+      label.textContent = config.sessions.length ? 'Prochaine session : ' + formatShortDate(config.sessions[0].date) : 'À VENIR';
+      card.dataset.catalogStatus = 'open';
+      var detail = root.querySelector('#catalog-template-' + card.dataset.course).content.querySelector('.catalog-detail');
+      if (config.sessions.length && detail) {
+        var block = document.createElement('section'); block.className = 'catalog-detail-block';
+        var heading = document.createElement('h3'); heading.textContent = 'Prochaines sessions'; block.appendChild(heading);
+        var list = document.createElement('ul');
+        config.sessions.forEach(function (session) { var row = document.createElement('li'); row.textContent = formatDate(session.date) + (session.time ? ' · ' + session.time : ''); list.appendChild(row); });
+        block.appendChild(list); detail.appendChild(block);
+      }
+    });
+    var calendar = root.querySelector('.catalog-sessions-calendar');
+    if (calendar) calendar.remove();
+    buildSessionsCalendar();
+    updateCatalogue('all', 'Toutes les formations', false);
+  }
+
   function updateFilterLabels() {
     filters.forEach(function (button) {
       var baseLabel = button.dataset.catalogFilterLabel || button.textContent;
@@ -544,8 +716,9 @@
     });
   });
 
-  root.querySelectorAll('[data-catalog-open]').forEach(function (button) {
-    button.addEventListener('click', function () {
+  root.addEventListener('click', function (event) {
+    var button = event.target.closest('[data-catalog-open]');
+    if (button && root.contains(button)) {
       var template = root.querySelector('#catalog-template-' + button.dataset.catalogOpen);
       if (!template) return;
       content.replaceChildren(template.content.cloneNode(true));
@@ -554,7 +727,7 @@
       document.body.style.overflow = 'hidden';
       dialog.showModal();
       dialog.scrollTop = 0;
-    });
+    }
   });
   root.querySelector('[data-catalog-close]').addEventListener('click', function () { dialog.close(); });
   dialog.addEventListener('keydown', function (event) {
@@ -576,4 +749,5 @@
     document.body.style.overflow = previousOverflow;
     go('contact');
   });
+  window.applyHubPublicData = applyHubPublicData;
 })();

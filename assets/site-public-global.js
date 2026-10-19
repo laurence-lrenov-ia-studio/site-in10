@@ -1,12 +1,17 @@
 /* Interactions des pages publiques hors catalogue et carte. */
 (() => {
   const memberGrid = document.getElementById('collective-members');
-  if (memberGrid) {
-    (window.collectifMembers || []).forEach((member, index) => {
+  function renderCollectifMembers(members) {
+    if (!memberGrid) return;
+    const founders = document.getElementById('collective-founders');
+    memberGrid.replaceChildren();
+    if (founders) founders.replaceChildren();
+    members.forEach((member, index) => {
       const card = document.createElement('article');
       card.className = 'collective-card';
+      if (member.profileId) card.dataset.profileId = member.profileId;
       const portrait = document.createElement('img');
-      portrait.src = member.photo;
+      if (member.photo) portrait.src = member.photo;
       portrait.alt = 'Portrait de ' + member.name;
       portrait.loading = 'lazy';
       portrait.width = 480;
@@ -14,7 +19,8 @@
       const photo = document.createElement('button');
       photo.type = 'button';
       photo.className = 'collective-photo-preview';
-      photo.setAttribute('aria-label', 'Aperçu de démonstration pour ' + member.name);
+      photo.setAttribute('aria-label', (member.staticProfile ? 'Aperçu de démonstration pour ' : 'Portrait de ') + member.name);
+      if (!member.photo) photo.hidden = true;
       // CONTENU TEMPORAIRE / DÉMO À REMPLACER : aucune information métier vérifiée.
       const demo = document.createElement('span');
       demo.className = 'collective-photo-demo';
@@ -24,33 +30,36 @@
       const demoText = document.createElement('span');
       demoText.textContent = 'Présentation de démonstration. Description du profil à venir.';
       demo.append(demoLabel, demoText);
-      photo.append(portrait, demo);
+      photo.appendChild(portrait);
+      if (member.staticProfile) photo.appendChild(demo);
       const body = document.createElement('div');
       body.className = 'collective-card-body';
       const name = document.createElement('h3');
       name.textContent = member.name;
       const specialty = document.createElement('p');
       specialty.className = 'collective-specialty';
-      if (index === 0) {
+      if (member.staticProfile && member.founderIndex === 0) {
         specialty.append('Office Manager / RAF', document.createElement('br'), 'Conseillère en immobilier');
       } else specialty.textContent = member.specialty;
       body.append(name, specialty);
-      if (index < 2) {
+      if (member.founderIndex !== undefined) {
         const label = document.createElement('span');
         label.className = 'collective-founder-label';
         label.textContent = 'Co-fondatrice';
         name.after(label);
       }
-      if (member.territory || index === 0) {
+      if (member.territory || (member.staticProfile && member.founderIndex === 0)) {
         const territory = document.createElement('p');
         territory.className = 'collective-territory';
-        territory.textContent = index === 0 ? 'Margaux-Cantenac · Gironde' : member.territory;
+        territory.textContent = member.staticProfile && member.founderIndex === 0 ? 'Margaux-Cantenac · Gironde' : member.territory;
         body.appendChild(territory);
       }
       card.append(photo, body);
-      (index < 2 ? document.getElementById('collective-founders') || memberGrid : memberGrid).appendChild(card);
+      (member.founderIndex !== undefined ? founders || memberGrid : memberGrid).appendChild(card);
     });
   }
+  window.renderCollectifMembers = renderCollectifMembers;
+  renderCollectifMembers((window.collectifMembers || []).map((member, index) => ({ ...member, staticProfile: true, ...(index < 2 ? { founderIndex: index } : {}) })));
 
   // Corriger les textes affichés sans modifier les données du catalogue partenaires.
   const training = document.getElementById('p-training');
