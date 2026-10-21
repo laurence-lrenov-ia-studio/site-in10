@@ -42,6 +42,12 @@
         specialty.append('Office Manager / RAF', document.createElement('br'), 'Conseillère en immobilier');
       } else specialty.textContent = member.specialty;
       body.append(name, specialty);
+      if (!member.staticProfile && member.description) {
+        const description = document.createElement('p');
+        description.className = 'collective-description';
+        description.textContent = member.description;
+        body.appendChild(description);
+      }
       if (member.founderIndex !== undefined) {
         const label = document.createElement('span');
         label.className = 'collective-founder-label';
