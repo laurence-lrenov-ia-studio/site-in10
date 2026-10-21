@@ -10,28 +10,42 @@
       const card = document.createElement('article');
       card.className = 'collective-card';
       if (member.profileId) card.dataset.profileId = member.profileId;
-      const portrait = document.createElement('img');
-      if (member.photo) portrait.src = member.photo;
-      portrait.alt = 'Portrait de ' + member.name;
-      portrait.loading = 'lazy';
-      portrait.width = 480;
-      portrait.height = 480;
       const photo = document.createElement('button');
       photo.type = 'button';
       photo.className = 'collective-photo-preview';
-      photo.setAttribute('aria-label', (member.staticProfile ? 'Aperçu de démonstration pour ' : 'Portrait de ') + member.name);
-      if (!member.photo) photo.hidden = true;
+      photo.setAttribute('aria-label', (member.staticProfile ? 'Aperçu de démonstration pour ' : member.description ? 'Présentation de ' : 'Portrait de ') + member.name);
+      if (member.photo) {
+        const portrait = document.createElement('img');
+        portrait.alt = member.hubPhoto && member.photoAlt ? member.photoAlt : 'Portrait de ' + member.name;
+        portrait.loading = 'lazy';
+        portrait.width = 480;
+        portrait.height = 480;
+        portrait.addEventListener('error', () => {
+          if (member.photoFallback && portrait.getAttribute('src') !== member.photoFallback) {
+            portrait.alt = 'Portrait de ' + member.name;
+            portrait.src = member.photoFallback;
+          } else portrait.remove();
+        });
+        portrait.src = member.photo;
+        photo.appendChild(portrait);
+      }
       // CONTENU TEMPORAIRE / DÉMO À REMPLACER : aucune information métier vérifiée.
       const demo = document.createElement('span');
       demo.className = 'collective-photo-demo';
-      demo.dataset.contentStatus = 'temporary-demo-replace';
-      const demoLabel = document.createElement('strong');
-      demoLabel.textContent = 'Démo · à remplacer';
       const demoText = document.createElement('span');
-      demoText.textContent = 'Présentation de démonstration. Description du profil à venir.';
-      demo.append(demoLabel, demoText);
-      photo.appendChild(portrait);
-      if (member.staticProfile) photo.appendChild(demo);
+      if (member.staticProfile) {
+        demo.dataset.contentStatus = 'temporary-demo-replace';
+        const demoLabel = document.createElement('strong');
+        demoLabel.textContent = 'Démo · à remplacer';
+        demoText.textContent = 'Présentation de démonstration. Description du profil à venir.';
+        demo.append(demoLabel, demoText);
+        photo.appendChild(demo);
+      } else if (member.description) {
+        demo.dataset.contentStatus = 'hub-public';
+        demoText.textContent = member.description;
+        demo.appendChild(demoText);
+        photo.appendChild(demo);
+      }
       const body = document.createElement('div');
       body.className = 'collective-card-body';
       const name = document.createElement('h3');
@@ -42,12 +56,6 @@
         specialty.append('Office Manager / RAF', document.createElement('br'), 'Conseillère en immobilier');
       } else specialty.textContent = member.specialty;
       body.append(name, specialty);
-      if (!member.staticProfile && member.description) {
-        const description = document.createElement('p');
-        description.className = 'collective-description';
-        description.textContent = member.description;
-        body.appendChild(description);
-      }
       if (member.founderIndex !== undefined) {
         const label = document.createElement('span');
         label.className = 'collective-founder-label';

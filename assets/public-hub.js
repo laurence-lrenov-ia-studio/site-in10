@@ -10,6 +10,19 @@
     }
     return '';
   }
+  function photoUrl(value) {
+    if (!value) return '';
+    try {
+      var url = new URL(value);
+      if (url.protocol !== 'https:') return '';
+      if (url.hostname !== 'drive.google.com') return url.href;
+      var file = url.pathname.match(/^\/file\/d\/([A-Za-z0-9_-]+)(?:\/|$)/);
+      var id = file ? file[1] : /^\/(?:thumbnail|uc|open)$/.test(url.pathname) ? url.searchParams.get('id') : '';
+      return id && /^[A-Za-z0-9_-]+$/.test(id) ? 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(id) + '&sz=w1000' : '';
+    } catch (error) {
+      return '';
+    }
+  }
   function applyProfiles(profiles) {
     if (!Array.isArray(profiles) || !profiles.length || typeof window.renderCollectifMembers !== 'function') return;
     var staticMembers = (window.collectifMembers || []).map(function (member, index) {
@@ -33,7 +46,7 @@
       var order = field(profile, ['ORDRE', 'ordre']);
       var functions = [field(profile, ['FONCTION_1', 'fonction_1']), field(profile, ['FONCTION_2', 'fonction_2'])].filter(Boolean);
       var location = [field(profile, ['VILLE', 'ville']), field(profile, ['DEPARTEMENT', 'departement']), field(profile, ['REGION', 'region'])].filter(Boolean);
-      var hubPhoto = field(profile, ['LIEN_PHOTO_DRIVE', 'lien_photo_drive', 'PHOTO_URL', 'photo_url', 'URL_PHOTO', 'url_photo', 'PHOTO_URL_DRIVE', 'photo_url_drive', 'PHOTO', 'photo']);
+      var hubPhoto = photoUrl(field(profile, ['LIEN_PHOTO_DRIVE', 'lien_photo_drive', 'PHOTO_URL', 'photo_url', 'URL_PHOTO', 'url_photo', 'PHOTO_URL_DRIVE', 'photo_url_drive', 'PHOTO', 'photo']));
       var member = {
         profileId: id,
         hubOrder: order !== '' && Number.isFinite(Number(order)) ? Number(order) : null,
@@ -41,6 +54,7 @@
         specialty: functions.length ? functions.join(' · ') : field(profile, ['SPECIALITE', 'specialite', 'SPECIALITE_AFFICHEE', 'specialite_affichee', 'METIER', 'metier', 'EXPERTISE', 'expertise', 'specialty']),
         territory: location.length ? location.join(' · ') : field(profile, ['TERRITOIRE', 'territoire', 'ZONE_GEOGRAPHIQUE', 'zone_geographique', 'LOCALISATION', 'localisation', 'territory']),
         photo: hubPhoto,
+        photoFallback: position >= 0 ? members[position].photo : '',
         hubPhoto: !!hubPhoto,
         photoAlt: field(profile, ['TEXTE_ALTERNATIF_PHOTO', 'texte_alternatif_photo']),
         description: field(profile, ['DESCRIPTION_COURTE_SITE', 'description_courte_site'])
@@ -67,12 +81,6 @@
         return a.index - b.index;
       });
       window.renderCollectifMembers(ordered.map(function (entry) { return entry.member; }));
-      document.querySelectorAll('.collective-card[data-profile-id]').forEach(function (card) {
-        var current = members.find(function (member) { return member.profileId === card.dataset.profileId; });
-        if (!current) return;
-        var image = card.querySelector('img');
-        if (image && current.hubPhoto && current.photoAlt) image.alt = current.photoAlt;
-      });
     }
   }
   async function loadPublicHubData() {
