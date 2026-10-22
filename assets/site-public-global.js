@@ -6,45 +6,35 @@
     const founders = document.getElementById('collective-founders');
     memberGrid.replaceChildren();
     if (founders) founders.replaceChildren();
-    members.forEach((member, index) => {
+    let founderCount = 0;
+    members.forEach((member) => {
+      const type = member.profileType.normalize('NFD').replace(/[\u0300-\u036f\s-]/g, '').toLowerCase();
+      const isFounder = type === 'cofondatrice' || type === 'cofondateur';
+      if (isFounder) founderCount++;
       const card = document.createElement('article');
       card.className = 'collective-card';
       if (member.profileId) card.dataset.profileId = member.profileId;
       const photo = document.createElement('button');
       photo.type = 'button';
       photo.className = 'collective-photo-preview';
-      photo.setAttribute('aria-label', (member.staticProfile ? 'Aperçu de démonstration pour ' : member.description ? 'Présentation de ' : 'Portrait de ') + member.name);
-      if (member.photo) {
+      photo.setAttribute('aria-label', (member.description ? 'Présentation de ' : 'Portrait de ') + member.name);
+      if (member.hubPhoto && member.photo) {
         const portrait = document.createElement('img');
         portrait.alt = member.hubPhoto && member.photoAlt ? member.photoAlt : 'Portrait de ' + member.name;
         portrait.loading = 'lazy';
         portrait.width = 480;
         portrait.height = 480;
-        portrait.addEventListener('error', () => {
-          if (member.photoFallback && portrait.getAttribute('src') !== member.photoFallback) {
-            portrait.alt = 'Portrait de ' + member.name;
-            portrait.src = member.photoFallback;
-          } else portrait.remove();
-        });
+        portrait.addEventListener('error', () => portrait.remove());
         portrait.src = member.photo;
         photo.appendChild(portrait);
       }
-      // CONTENU TEMPORAIRE / DÉMO À REMPLACER : aucune information métier vérifiée.
-      const demo = document.createElement('span');
-      demo.className = 'collective-photo-demo';
-      const demoText = document.createElement('span');
-      if (member.staticProfile) {
-        demo.dataset.contentStatus = 'temporary-demo-replace';
-        const demoLabel = document.createElement('strong');
-        demoLabel.textContent = 'Démo · à remplacer';
-        demoText.textContent = 'Présentation de démonstration. Description du profil à venir.';
-        demo.append(demoLabel, demoText);
-        photo.appendChild(demo);
-      } else if (member.description) {
-        demo.dataset.contentStatus = 'hub-public';
-        demoText.textContent = member.description;
-        demo.appendChild(demoText);
-        photo.appendChild(demo);
+      if (member.description) {
+        const description = document.createElement('span');
+        description.className = 'collective-photo-description';
+        const text = document.createElement('span');
+        text.textContent = member.description;
+        description.appendChild(text);
+        photo.appendChild(description);
       }
       const body = document.createElement('div');
       body.className = 'collective-card-body';
@@ -52,28 +42,28 @@
       name.textContent = member.name;
       const specialty = document.createElement('p');
       specialty.className = 'collective-specialty';
-      if (member.staticProfile && member.founderIndex === 0) {
-        specialty.append('Office Manager / RAF', document.createElement('br'), 'Conseillère en immobilier');
-      } else specialty.textContent = member.specialty;
+      specialty.textContent = member.specialty;
       body.append(name, specialty);
-      if (member.founderIndex !== undefined) {
+      if (isFounder) {
         const label = document.createElement('span');
         label.className = 'collective-founder-label';
-        label.textContent = 'Co-fondatrice';
+        label.textContent = member.profileType;
         name.after(label);
       }
-      if (member.territory || (member.staticProfile && member.founderIndex === 0)) {
+      if (member.territory) {
         const territory = document.createElement('p');
         territory.className = 'collective-territory';
-        territory.textContent = member.staticProfile && member.founderIndex === 0 ? 'Margaux-Cantenac · Gironde' : member.territory;
+        territory.textContent = member.territory;
         body.appendChild(territory);
       }
       card.append(photo, body);
-      (member.founderIndex !== undefined ? founders || memberGrid : memberGrid).appendChild(card);
+      (isFounder ? founders || memberGrid : memberGrid).appendChild(card);
     });
+    if (founders) founders.previousElementSibling.hidden = founderCount === 0;
+    memberGrid.previousElementSibling.hidden = members.length === founderCount;
   }
   window.renderCollectifMembers = renderCollectifMembers;
-  renderCollectifMembers((window.collectifMembers || []).map((member, index) => ({ ...member, staticProfile: true, ...(index < 2 ? { founderIndex: index } : {}) })));
+  renderCollectifMembers([]);
 
   // Corriger les textes affichés sans modifier les données du catalogue partenaires.
   const training = document.getElementById('p-training');
