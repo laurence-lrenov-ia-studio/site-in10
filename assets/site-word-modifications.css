@@ -80,3 +80,49 @@ footer .foot a{display:block;font-size:12px;padding:6px 0;overflow-wrap:anywhere
 #p-network .collective-photo-preview:focus-visible{outline:3px solid #b87554;outline-offset:-3px}
 @media(max-width:460px){#p-network .collective-card-body{padding:18px 20px 20px}}
 @media(prefers-reduced-motion:reduce){#p-network .collective-photo-preview img,#p-network .collective-photo-demo{transition:none}}
+
+/* Photos Julie : ajustements limités aux deux headers Réseau et Collectif. */
+#p-join .public-join-hero{
+  background:linear-gradient(180deg,transparent 40%,rgba(20,15,12,.78) 100%),url('reseau-hero-julie-audrey.jpg') center top/cover no-repeat;
+  min-height:0;aspect-ratio:1.5;display:flex;align-items:flex-end;padding:40px 32px;
+}
+#p-join .public-join-panel{
+  background:transparent;border:0;box-shadow:none;backdrop-filter:none;color:#fff;padding:0;max-width:1040px;width:100%;
+  text-shadow:0 2px 5px rgba(0,0,0,.7);
+}
+#p-join .public-join-panel h1,#p-join .public-join-panel .public-intro{color:#fff}
+#p-join .public-join-panel h1 em,#p-join .public-join-panel .public-eyebrow{color:#ffe0c9}
+#p-network .public-network-hero{
+  background:linear-gradient(180deg,transparent 35%,rgba(12,19,29,.85) 100%),url('collectif-hero-groupe.png') center top/cover no-repeat;
+  min-height:620px;aspect-ratio:2.1;align-items:flex-end;padding:32px 0;
+}
+#p-network .public-network-hero::before,#p-network .public-network-hero::after{display:none}
+html #p-network .public-network-hero .public-network-hero-grid{
+  background:transparent;border:0;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;
+  max-width:1000px;padding:0;margin:0 48px;text-shadow:0 2px 5px rgba(0,0,0,.8);
+}
+#p-network .public-network-hero h1,#p-network .public-network-hero .public-intro{color:#fff}
+#p-network .public-network-hero h1 em,#p-network .public-network-hero .public-eyebrow{color:#ffe0c9}
+#p-network .public-network-hero .fx-net{display:none}
+@media(max-width:1000px){
+  #p-join .public-join-hero{aspect-ratio:auto;padding-top:50%;background-size:100% auto;background-color:#291e18}
+  #p-network .public-network-hero{aspect-ratio:auto;min-height:0;padding-top:32%;background-size:100% auto;background-color:#121c29}
+}
+@media(max-width:760px){
+  #p-join .public-join-hero{
+    background-image:url('reseau-hero-julie-audrey.jpg');background-size:100% auto;background-position:center top;
+    background-color:#fffaf5;padding:calc((100vw - 24px)*.666667 + 24px) 20px 30px;
+  }
+  #p-join .public-join-panel{padding:0;text-shadow:none}
+  #p-join .public-join-panel h1,#p-join .public-join-panel .public-intro{color:#493029}
+  #p-join .public-join-panel h1 em,#p-join .public-join-panel .public-eyebrow{color:#80523d}
+  #p-network .public-network-hero{
+    background-image:url('collectif-hero-groupe.png');background-size:auto 190px;background-position:center top;
+    background-color:#fffaf5;padding:214px 0 30px;
+  }
+  html #p-network .public-network-hero .public-network-hero-grid{margin:0 22px;padding:0;text-shadow:none}
+  #p-network .public-network-hero h1,#p-network .public-network-hero .public-intro{color:#493029}
+  #p-network .public-network-hero h1 em,#p-network .public-network-hero .public-eyebrow{color:#80523d}
+}
+#p-join .public-join-panel{margin:0 auto}
+#p-join .public-join-hero,#p-network .public-network-hero{background-repeat:no-repeat}
