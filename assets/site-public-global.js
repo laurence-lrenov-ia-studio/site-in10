@@ -105,12 +105,37 @@
   if (training) new MutationObserver(correctTrainingText).observe(training, { childList: true, subtree: true });
 
   document.querySelectorAll('[data-local-form]').forEach(form => {
-    form.addEventListener('submit', event => {
+    let sending = false;
+    form.addEventListener('submit', async event => {
       event.preventDefault();
-      if (!form.reportValidity()) return;
+      if (sending || !form.reportValidity()) return;
       const status = form.querySelector('.public-form-status');
-      status.textContent = 'Votre message n’a pas été envoyé. Vous pouvez nous écrire à contact@in10pensables.fr ou nous appeler au 06 60 06 34 08.';
+      const button = form.querySelector('button[type="submit"]');
+      const buttonLabel = button.textContent;
+      sending = true;
+      button.disabled = true;
+      button.textContent = 'Envoi…';
+      form.setAttribute('aria-busy', 'true');
       status.hidden = false;
+      status.textContent = 'Envoi en cours…';
+      try {
+        const data = new FormData(form);
+        const response = await fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams(data).toString()
+        });
+        if (!response.ok) throw new Error('Échec de l’envoi du formulaire');
+        form.reset();
+        status.textContent = 'Votre message a bien été envoyé. Nous revenons vers vous rapidement.';
+      } catch (error) {
+        status.textContent = 'Votre message n’a pas été envoyé. Vous pouvez nous écrire à contact@in10pensables.fr ou nous appeler au 06 60 06 34 08.';
+      } finally {
+        sending = false;
+        button.disabled = false;
+        button.textContent = buttonLabel;
+        form.removeAttribute('aria-busy');
+      }
     });
   });
 })();
