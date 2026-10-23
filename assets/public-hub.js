@@ -39,7 +39,7 @@
         profileId: id,
         name: [firstName, initial].filter(Boolean).join(' '),
         profileType: field(profile, 'TYPE_PROFIL'),
-        specialty: ['FONCTION_1', 'FONCTION_2'].map(function (key) { return field(profile, key); }).filter(Boolean).join(' · '),
+        specialty: ['FONCTION_1', 'FONCTION_2'].map(function (key) { return field(profile, key); }).filter(Boolean).join('\n'),
         territory: ['VILLE', 'DEPARTEMENT', 'REGION'].map(function (key) { return field(profile, key); }).filter(Boolean).join(' · '),
         photo: photo, hubPhoto: !!photo,
         photoAlt: field(profile, 'TEXTE_ALTERNATIF_PHOTO'),
