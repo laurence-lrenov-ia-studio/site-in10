@@ -1,0 +1,28 @@
+# Livraisons locales, supprimables après validation du déploiement
+/deploy-*/
+/netlify/
+
+# Artefacts de chantier
+/validation/
+/outputs/
+/captures/
+/sauvegardes/
+/tests-generes/
+/test-results/
+/playwright-report/
+/coverage/
+/NETTOYAGE_DEPOT_*.md
+/COMPTE_RENDU_*.md
+
+# Dépendances et caches
+node_modules/
+.cache/
+.netlify/
+*.log
+*.tmp
+*.temp
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+Desktop.ini
