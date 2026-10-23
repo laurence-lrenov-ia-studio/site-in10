@@ -1,4 +1,4 @@
-/* Données publiques chargées à l'ouverture de la section concernée. */
+/* Profils publics préchargés ; formations chargées à l'ouverture de leur section. */
 (function () {
   'use strict';
   var endpoint = 'https://script.google.com/macros/s/AKfycbxyi1S9TMtarwRlqJRBAGF19LC00D9sT02A71qFxJpOmVqvWFybWhFWY4PIMBGCAAxm/exec';
@@ -104,5 +104,7 @@
     var page = document.getElementById(id);
     if (page) observer.observe(page, { attributes: true, attributeFilter: ['class'] });
   });
+  // Même promesse et même déduplication pour l'accueil et l'arrivée directe.
+  loadProfiles();
   loadPublicHubData();
 })();

@@ -93,8 +93,8 @@ function doGet(e) {
 
 function readPublicData_(action) {
   action = action || 'all';
+  if (action === 'profiles') return { profiles: readCachedPublicProfiles_() };
   const ss = SpreadsheetApp.openById(SITE_PUBLIC.HUB_ID);
-  if (action === 'profiles') return { profiles: readPublicProfiles_(ss) };
 
   // Les sessions ne sont publiques que si leur formation est publiée.
   const publishedFormationRows = readPublishedFormationRows_(ss);
@@ -109,13 +109,81 @@ function readPublicData_(action) {
   return { profiles: readPublicProfiles_(ss), formations, sessions };
 }
 
-function readPublicProfiles_(ss) {
-  const profileRows = readTab_(ss, SITE_PUBLIC.TABS.profiles);
-  return profileRows
-    .filter(r => isTrue_(r.PUBLIER_SITE) && isValidated_(r.STATUT_CONTROLE))
-    .map(r => pick_(r, SITE_PUBLIC.PUBLIC_FIELDS.profiles))
-    .sort(sortByOrder_);
+// Cache partagé du script : uniquement les champs publics après filtrage.
+// Changer la version de clé si le contrat public ou ses règles changent.
+const PUBLIC_PROFILES_CACHE_KEY = 'site-public:profiles:v1:' + SITE_PUBLIC.HUB_ID;
+const PUBLIC_PROFILES_CACHE_TTL_SECONDS = 60;
 
+function readCachedPublicProfiles_() {
+  const started = Date.now();
+  const metrics = {
+    action: 'profiles', cache: 'MISS', cacheReadFailed: false, cacheWriteFailed: false,
+    spreadsheetAccessMs: 0, profilesReadMs: 0, transformMs: 0, outcome: 'ERROR'
+  };
+  let cache;
+  try {
+    try {
+      cache = CacheService.getScriptCache();
+      const raw = cache.get(PUBLIC_PROFILES_CACHE_KEY);
+      if (raw !== null) {
+        const entry = JSON.parse(raw);
+        const now = Date.now();
+        // L'expiration est aussi vérifiée ici ; un cache invalide reste un MISS.
+        if (entry && Number.isFinite(entry.expiresAt) && entry.expiresAt > now &&
+            entry.expiresAt <= now + PUBLIC_PROFILES_CACHE_TTL_SECONDS * 1000 &&
+            Array.isArray(entry.items) && entry.items.every(function (item) {
+              return item && typeof item === 'object' && !Array.isArray(item) &&
+                Object.keys(item).every(function (key) {
+                  return SITE_PUBLIC.PUBLIC_FIELDS.profiles.includes(key) &&
+                    (item[key] === null || ['string', 'number', 'boolean'].includes(typeof item[key]));
+                });
+            })) {
+          metrics.cache = 'HIT';
+          metrics.outcome = 'OK';
+          return entry.items;
+        }
+      }
+    } catch (error) {
+      metrics.cacheReadFailed = true;
+    }
+
+    const accessStarted = Date.now();
+    let ss;
+    try { ss = SpreadsheetApp.openById(SITE_PUBLIC.HUB_ID); }
+    finally { metrics.spreadsheetAccessMs = Date.now() - accessStarted; }
+    const profiles = readPublicProfiles_(ss, metrics);
+    try {
+      if (cache) cache.put(PUBLIC_PROFILES_CACHE_KEY, JSON.stringify({
+        expiresAt: Date.now() + PUBLIC_PROFILES_CACHE_TTL_SECONDS * 1000,
+        items: profiles
+      }), PUBLIC_PROFILES_CACHE_TTL_SECONDS);
+    } catch (error) {
+      // Le cache est facultatif (indisponibilité, limite de taille ou quota).
+      metrics.cacheWriteFailed = true;
+    }
+    metrics.outcome = 'OK';
+    return profiles;
+  } finally {
+    metrics.totalMs = Date.now() - started;
+    // Aucun contenu de profil, identifiant ou détail d'erreur dans ces mesures.
+    console.log(JSON.stringify(metrics));
+  }
+}
+
+function readPublicProfiles_(ss, metrics) {
+  const readStarted = Date.now();
+  let profileRows;
+  try { profileRows = readTab_(ss, SITE_PUBLIC.TABS.profiles); }
+  finally { if (metrics) metrics.profilesReadMs = Date.now() - readStarted; }
+  const transformStarted = Date.now();
+  try {
+    return profileRows
+      .filter(r => isTrue_(r.PUBLIER_SITE) && isValidated_(r.STATUT_CONTROLE))
+      .map(r => pick_(r, SITE_PUBLIC.PUBLIC_FIELDS.profiles))
+      .sort(sortByOrder_);
+  } finally {
+    if (metrics) metrics.transformMs = Date.now() - transformStarted;
+  }
 }
 
 function readPublishedFormationRows_(ss) {
