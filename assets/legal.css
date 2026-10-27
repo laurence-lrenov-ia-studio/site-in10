@@ -1,0 +1,33 @@
+.public-field-optional { font-size: .82em; font-weight: 500; text-transform: none; letter-spacing: normal; }
+.public-form-privacy { margin: 18px 0; color: #79685d; font-size: 13px; line-height: 1.6; }
+.public-form-privacy a, .public-footer-legal a { text-decoration: underline; text-underline-offset: 3px; }
+.public-form-privacy a:hover, .public-form-privacy a:focus-visible { color: #754130; }
+.public-footer-legal { display: inline-block; margin-left: 1.25rem; }
+.public-footer-legal a:hover, .public-footer-legal a:focus-visible { color: #fff; }
+
+.legal-page { min-height: 100vh; margin: 0; background: #f6efe7; color: #251b17; font: 16px/1.7 Inter, Arial, sans-serif; }
+.legal-page *, .legal-page *::before, .legal-page *::after { box-sizing: border-box; }
+.legal-page a { color: #754130; text-underline-offset: 3px; }
+.legal-page a:hover, .legal-page a:focus-visible { color: #b87554; }
+.legal-header { background: #211511; color: #fffaf5; }
+.legal-header-inner { width: min(100% - 40px, 920px); margin: auto; padding: 18px 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 30px; }
+.legal-brand { color: inherit !important; font: 600 24px Georgia, serif; text-decoration: none; }
+.legal-back { color: inherit !important; font-size: 14px; }
+.legal-main { width: min(100% - 40px, 920px); margin: 0 auto; padding: 64px 0 80px; }
+.legal-main h1, .legal-main h2 { color: #754130; font-family: Georgia, serif; font-weight: 500; line-height: 1.2; }
+.legal-main h1 { margin: 0 0 12px; font-size: clamp(36px, 5vw, 54px); }
+.legal-main h2 { margin: 42px 0 10px; font-size: clamp(23px, 3vw, 29px); }
+.legal-main p, .legal-main ul { max-width: 76ch; }
+.legal-main section > p { text-align: justify; text-align-last: left; }
+.legal-main section > p.legal-coordinates { text-align: left; }
+.legal-main ul { padding-left: 1.5em; }
+.legal-main li { margin: .3em 0; }
+.legal-intro { color: #79685d; font-size: 18px; }
+.legal-footer { border-top: 1px solid #ead4c0; padding: 24px 20px; text-align: center; font-size: 13px; }
+.legal-footer a { margin: 0 8px; }
+@media (max-width: 650px) {
+  .public-footer-legal { display: block; margin: 8px 0 0; }
+  .legal-header-inner, .legal-main { width: min(100% - 28px, 920px); }
+  .legal-main { padding: 42px 0 60px; }
+  .legal-main section > p { text-align: left; }
+}
