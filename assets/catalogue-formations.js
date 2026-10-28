@@ -441,14 +441,23 @@
     return sessions;
   }
 
+  function calendarTodayKey() {
+    var today = new Date();
+    return today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+  }
+
   function buildSessionsCalendar() {
-    var firstMonth = programming.sessions[0].date.slice(0, 7);
-    var lastMonth = programming.sessions[programming.sessions.length - 1].date.slice(0, 7);
-    var sessions = getScheduledSessions().filter(function (session) { var month = session.date.slice(0, 7); return month >= firstMonth && month <= lastMonth; });
+    var previousCalendar = root.querySelector('.catalog-sessions-calendar');
+    var selectedMonth = previousCalendar && previousCalendar.querySelector('[aria-selected="true"]');
+    var preferredMonth = selectedMonth && selectedMonth.dataset.catalogMonth;
+    if (previousCalendar) previousCalendar.remove();
+    // Tous les organismes, sans borne mensuelle ; les données historiques restent intactes.
+    var today = calendarTodayKey();
+    var sessions = getScheduledSessions().filter(function (session) { return session.date >= today; });
     if (!sessions.length) return;
     var section = document.createElement('section');
     section.className = 'catalog-sessions-calendar';
-    section.innerHTML = '<div class="catalog-calendar-heading"><p class="catalog-upcoming-kicker">Prochaines sessions</p><h2>Les dates à retenir</h2><p>Ateliers, journées ENTER et Pass IA 360°. Retrouvez chaque horaire et les informations d’inscription dans la fiche.</p></div><div class="catalog-calendar-months" role="tablist" aria-label="Mois de formation"></div><div class="catalog-calendar-panel" role="tabpanel" id="catalog-calendar-panel"></div>';
+    section.innerHTML = '<div class="catalog-calendar-heading"><p class="catalog-upcoming-kicker">Prochaines formations</p><h2>Les dates à retenir</h2><p>Retrouvez les prochaines formations proposées par Les In10pensables.</p></div><div class="catalog-calendar-months" role="tablist" aria-label="Mois de formation"></div><div class="catalog-calendar-panel" role="tabpanel" id="catalog-calendar-panel"></div>';
     var groups = new Map();
     sessions.forEach(function (session) {
       var key = session.date.slice(0, 7);
@@ -473,25 +482,14 @@
       dates.forEach(function (items, date) {
         var day = document.createElement('article'); day.className = 'catalog-calendar-day';
         var heading = document.createElement('h3'); heading.textContent = formatDate(date); day.appendChild(heading);
-        var editorial = document.createElement('p'); editorial.className = 'catalog-calendar-editorial';
-        if (items.some(function (item) { return item.kind === 'ENTER'; })) editorial.textContent = programming.enterHeading;
-        else if (items.some(function (item) { return /CTRL|CMD/.test(item.kind); }) && new Date(date + 'T12:00:00').getDay() === 2) editorial.textContent = programming.aiHeading;
-        else if (items.some(function (item) { return item.kind === 'PASS'; })) editorial.textContent = '🎓 Pass IA 360°';
-        if (editorial.textContent) day.appendChild(editorial);
         items.forEach(function (session) {
           var button = document.createElement('button');
           button.type = 'button'; button.className = 'catalog-calendar-session'; button.dataset.catalogOpen = session.courseId;
           button.dataset.sessionDate = date; button.dataset.sessionStart = session.start; button.dataset.sessionKind = session.kind;
           button.setAttribute('aria-haspopup', 'dialog'); button.setAttribute('aria-controls', 'catalog-details');
-          var title = document.createElement('strong'); title.textContent = (session.kind ? session.kind + ' · ' : '') + session.title;
+          var title = document.createElement('strong'); title.textContent = session.title;
           var time = document.createElement('span'); time.textContent = session.time;
           button.append(title, time);
-          if (session.label) {
-            var label = document.createElement('span'); label.textContent = session.label + (session.day ? ' · Jour ' + session.day + '/3' : ''); button.appendChild(label);
-          }
-          if (programming.formats[session.kind] && programming.formats[session.kind].funding) {
-            var badge = document.createElement('span'); badge.className = 'catalog-financing-badge'; badge.textContent = programming.formats[session.kind].funding; button.appendChild(badge);
-          }
           day.appendChild(button);
         });
         panel.appendChild(day);
@@ -514,8 +512,7 @@
       });
       monthButtons.appendChild(button);
     });
-    var currentMonth = todayKey().slice(0, 7);
-    showMonth(groups.has(currentMonth) ? currentMonth : monthKeys[0]);
+    showMonth(groups.has(preferredMonth) ? preferredMonth : monthKeys[0]);
     root.querySelector('#catalogue-formations .catalog-domain-content-zone').after(section);
   }
 
@@ -730,6 +727,20 @@
   buildDomains();
   buildSessionsCalendar();
   updateCatalogue('all', 'Toutes les formations', false);
+
+  // Une page laissée ouverte suit aussi le changement de jour, sans appel au Hub.
+  var calendarDate = calendarTodayKey();
+  function refreshCalendarDate() {
+    var currentDate = calendarTodayKey();
+    if (currentDate === calendarDate) return;
+    calendarDate = currentDate;
+    buildSessionsCalendar();
+  }
+  window.setInterval(refreshCalendarDate, 60000);
+  window.addEventListener('focus', refreshCalendarDate);
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) refreshCalendarDate();
+  });
 
   root.querySelector('[data-catalog-scroll]').addEventListener('click', function () {
     root.querySelector('#catalogue-formations').scrollIntoView({ behavior: 'smooth', block: 'start' });
