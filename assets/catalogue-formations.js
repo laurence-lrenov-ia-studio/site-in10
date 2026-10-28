@@ -10,28 +10,19 @@
   var previousOverflow;
 
   // Source unique des statuts et des sessions. Les horaires sont affichés lorsqu’ils sont renseignés.
+  var programming = window.IN10_TRAINING_PROGRAMMING;
+  if (!programming) return;
+  var cpfReference;
+  var cpfCardReference;
+  var registrationLinks = {};
+  // Les dates IA validées viennent exclusivement de programmation-formations.js.
+  // Les sessions des autres organismes restent indépendantes.
   var courseConfiguration = {
-    'personnaliser-ia': { status: 'open', sessions: [{ date: '2026-10-20' }] }, 'personnaliser-claude': { status: 'open', sessions: [{ date: '2026-10-22' }] },
-    'contenus-ia': { status: 'open', sessions: [{ date: '2026-11-17' }] }, 'contenus-claude': { status: 'open', sessions: [{ date: '2026-11-19' }] },
-    'visuels-ia': { status: 'open', sessions: [{ date: '2026-12-01' }] },
-    'documents-ia': { status: 'open', sessions: [{ date: '2026-10-29' }] }, 'documents-claude': { status: 'open', sessions: [{ date: '2026-10-27' }] }, 'documents-notebooklm': { status: 'open', sessions: [{ date: '2026-12-03' }] },
-    'donnees-ia': { status: 'open', sessions: [{ date: '2026-11-24' }] }, 'donnees-claude': { status: 'open', sessions: [{ date: '2026-11-26' }] },
-    'routines-ia': { status: 'open', sessions: [{ date: '2026-11-05' }] }, 'espace-notion': { status: 'open', sessions: [{ date: '2026-11-10' }] },
-    'ia-methodes': { status: 'open', sessions: [{ date: '2026-12-08', label: 'Séance 1', duration: '3 h 30' }, { date: '2026-12-15', label: 'Séance 2', duration: '3 h 30' }], intersession: 'Travail intersession sur une situation professionnelle réelle entre les deux séances.' },
-    'communication-ia': { status: 'open', sessions: [] }, 'pilotage-ia': { status: 'open', sessions: [] },
-    'generateur-contenus': { status: 'open', sessions: [] }, 'generateur-visuels': { status: 'open', sessions: [] }, 'tableau-pilotage': { status: 'open', sessions: [] }, 'mini-outil': { status: 'open', sessions: [] },
-    'dashboard-notion': { status: 'open', sessions: [{ date: '2026-11-12' }] }, 'rentabilite-tpe-ia': { status: 'open', sessions: [], duration: '36 h' }, 'videos-smartphone': { status: 'open', sessions: [] },
-    'mentions-devis-factures': { status: 'open', sessions: [{ date: '2026-10-27', time: '14h–16h' }, { date: '2026-11-03', time: '14h–16h' }] }, 'rgpd-cnil-registre': { status: 'open', sessions: [{ date: '2026-10-29', time: '14h–16h' }, { date: '2026-11-05', time: '14h–16h' }] }, 'sous-traitants-prestataires': { status: 'open', sessions: [{ date: '2026-10-31', time: '14h–16h' }, { date: '2026-11-17', time: '14h–16h' }] },
-    'sst-initial': { status: 'open', sessions: [] }, 'mac-sst': { status: 'open', sessions: [] }, 'referent-sst-duerp': { status: 'open', sessions: [] }, 'duerp': { status: 'open', sessions: [] }
+    'mentions-devis-factures': { status: 'open', sessions: [{ date: '2026-10-27', time: '14h–16h' }, { date: '2026-11-03', time: '14h–16h' }] },
+    'rgpd-cnil-registre': { status: 'open', sessions: [{ date: '2026-10-29', time: '14h–16h' }, { date: '2026-11-05', time: '14h–16h' }] },
+    'sous-traitants-prestataires': { status: 'open', sessions: [{ date: '2026-10-31', time: '14h–16h' }, { date: '2026-11-17', time: '14h–16h' }] }
   };
   var validStatuses = ['open', 'upcoming', 'hidden'];
-  var iaTopics = [
-    { title: 'Prendre en main son IA', hook: 'Installez des repères utiles avant de multiplier les outils.', courses: ['personnaliser-ia', 'personnaliser-claude'] },
-    { title: 'Créer avec l’IA', hook: 'Produisez des contenus, visuels, documents et analyses plus cohérents.', courses: ['documents-claude', 'documents-ia', 'contenus-ia', 'contenus-claude', 'donnees-ia', 'donnees-claude', 'visuels-ia', 'documents-notebooklm'] },
-    { title: 'Structurer son activité avec l’IA', hook: 'Organisez vos méthodes, vos espaces de travail et votre pilotage.', courses: ['routines-ia', 'espace-notion', 'ia-methodes', 'communication-ia', 'pilotage-ia'] },
-    { title: 'Construire ses outils avec l’IA', hook: 'Transformez vos méthodes en outils réutilisables pour votre activité.', courses: ['generateur-contenus', 'generateur-visuels', 'tableau-pilotage', 'mini-outil', 'dashboard-notion'] }
-  ];
-
   function formatDate(value) {
     var date = new Date(value + 'T12:00:00');
     if (Number.isNaN(date.getTime())) return null;
@@ -44,63 +35,6 @@
     return new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long' }).format(date);
   }
 
-  function updateCourseTitle(id, title) {
-    var card = root.querySelector('.catalog-card[data-course="' + id + '"]');
-    if (card) card.querySelector('h4').textContent = title;
-    var template = root.querySelector('#catalog-template-' + id);
-    if (template && template.content.querySelector('h2')) template.content.querySelector('h2').textContent = title;
-  }
-
-  function updateCourseHook(id, hook) {
-    var card = root.querySelector('.catalog-card[data-course="' + id + '"]');
-    if (card && card.querySelector('.catalog-card-hook')) card.querySelector('.catalog-card-hook').textContent = hook;
-  }
-
-  function cloneCourse(sourceId, id, title, hook) {
-    var source = root.querySelector('.catalog-card[data-course="' + sourceId + '"]');
-    if (!source) return null;
-    var card = source.cloneNode(true);
-    card.dataset.course = id;
-    card.querySelector('h4').textContent = title;
-    if (hook && card.querySelector('.catalog-card-hook')) card.querySelector('.catalog-card-hook').textContent = hook;
-    var button = card.querySelector('[data-catalog-open]');
-    if (button) { button.dataset.catalogOpen = id; button.setAttribute('aria-label', 'Voir le détail : ' + title); }
-    source.parentElement.appendChild(card);
-    var sourceTemplate = root.querySelector('#catalog-template-' + sourceId);
-    if (sourceTemplate) {
-      var template = sourceTemplate.cloneNode(true);
-      template.id = 'catalog-template-' + id;
-      if (template.content.querySelector('h2')) template.content.querySelector('h2').textContent = title;
-      root.appendChild(template);
-    }
-    return card;
-  }
-
-  function preparePreciseIaCourses() {
-    updateCourseTitle('personnaliser-ia', 'Personnaliser ChatGPT'); updateCourseHook('personnaliser-ia', 'Faites de ChatGPT un assistant qui connaît déjà votre activité, vos clients et votre façon de travailler.');
-    cloneCourse('personnaliser-ia', 'personnaliser-claude', 'Personnaliser Claude', 'Configurez Claude pour qu’il travaille avec votre contexte, votre ton et vos propres règles.');
-    updateCourseTitle('contenus-ia', 'Créer ses contenus avec ChatGPT'); updateCourseHook('contenus-ia', 'Produisez plus vite sans perdre votre ton, vos idées ni votre personnalité.');
-    cloneCourse('contenus-ia', 'contenus-claude', 'Créer ses contenus avec Claude', 'Transformez votre matière en contenus cohérents, naturels et vraiment adaptés à votre communication.');
-    updateCourseTitle('visuels-ia', 'Créer ses visuels professionnels avec ChatGPT'); updateCourseHook('visuels-ia', 'Créez des visuels qui ressemblent vraiment à votre marque au lieu de générer des images génériques.');
-    updateCourseTitle('documents-ia', 'Créer ses documents professionnels avec ChatGPT'); updateCourseHook('documents-ia', 'Transformez vos idées et vos informations en documents professionnels prêts à être utilisés.');
-    cloneCourse('documents-ia', 'documents-claude', 'Créer ses documents professionnels avec Claude', 'Passez de l’idée au document final sans perdre des heures sur la structure et la mise en forme.');
-    cloneCourse('documents-ia', 'documents-notebooklm', 'Exploiter ses documents avec NotebookLM', 'Transformez vos propres documents en une source de réponses, d’idées et de contenus immédiatement exploitable.');
-    updateCourseTitle('donnees-ia', 'Exploiter ses données avec ChatGPT'); updateCourseHook('donnees-ia', 'Faites parler vos données pour repérer ce qui compte vraiment dans votre activité.');
-    cloneCourse('donnees-ia', 'donnees-claude', 'Exploiter ses données avec Claude', 'Passez de vos tableaux à des constats utiles et à des décisions plus faciles à prendre.');
-    updateCourseHook('routines-ia', 'Arrêtez de refaire les mêmes demandes : transformez vos tâches répétitives en routines fiables.');
-    updateCourseHook('espace-notion', 'Construisez enfin un espace Notion qui correspond réellement à votre façon de travailler.');
-    updateCourseHook('dashboard-notion', 'Regroupez au même endroit ce que vous devez vraiment suivre pour piloter votre activité.');
-    updateCourseHook('ia-methodes', 'Intégrez l’IA dans vos vraies méthodes de travail pour gagner du temps sans perdre le contrôle.');
-    var featured = cloneCourse('ia-methodes', 'rentabilite-tpe-ia', 'Augmenter la rentabilité de sa TPE grâce à l’IA', 'Une formation spécifique de 36 h dédiée à la rentabilité des TPE grâce à l’IA.');
-    if (featured) {
-      featured.classList.add('catalog-card--specific');
-      var fundingMeta = featured.querySelector('.catalog-meta'); if (fundingMeta) fundingMeta.innerHTML = '<span>36 h</span>';
-      var fundingPrices = featured.querySelector('.catalog-card-prices'); if (fundingPrices) fundingPrices.remove();
-      var fundingTemplate = root.querySelector('#catalog-template-rentabilite-tpe-ia');
-      if (fundingTemplate) fundingTemplate.innerHTML = '<article class="catalog-detail"><p class="catalog-detail-eyebrow">Formation spécifique</p><h2>Augmenter la rentabilité de sa TPE grâce à l’IA</h2><p class="catalog-detail-lead">Durée : 36 h.</p><p>Les objectifs, le programme, les modalités, le tarif, le financement et une éventuelle certification seront publiés à partir de la fiche programme de référence.</p></article>';
-    }
-  }
-
   /* Le catalogue IA associe les formations disponibles toute l'année et les
      prochaines sessions programmées. Les deux ensembles restent complémentaires. */
   function rebuildIaProgramming() {
@@ -110,13 +44,13 @@
     var legacyCards = new Map(Array.from(oldGrid.querySelectorAll('.catalog-card[data-course]')).map(function (card) { return [card.dataset.course, card]; }));
 
     var programme = [
-      { id: 'services-personnaliser-ia', date: '2026-10-20', title: 'Personnaliser son IA', duration: '1 h 30', publicPrice: '79 €', memberPrice: '69 €', hook: 'Configurez votre IA pour qu’elle comprenne votre activité, votre contexte, votre ton et votre façon de travailler.', environments: ['ChatGPT — 9h à 10h30', 'Claude — 11h à 12h30'], format: 'Visio', learn: ['Configurer votre activité, votre contexte, votre rôle et vos interlocuteurs.', 'Définir votre ton, vos préférences, vos règles récurrentes et vos interdits.', 'Tester la personnalisation sur de vraies demandes et l’ajuster.'], takeaway: 'Un profil de référence corrigé par vous, un environnement IA personnalisé et une méthode pour le tenir à jour.', audience: 'Professionnels qui veulent utiliser une IA conversationnelle dans leur activité.', prerequisites: 'Aucun prérequis.' },
-      { id: 'services-documents-ia', date: '2026-10-27', title: 'Créer ses documents professionnels avec l’IA', duration: '1 h 30', publicPrice: '79 €', memberPrice: '69 €', hook: 'Passez de vos informations au document professionnel final sans perdre des heures sur la structure et la rédaction.', environments: ['ChatGPT — 9h à 10h30', 'Claude — 11h à 12h30'], format: 'Visio', learn: ['Cadrer le besoin et valider le plan avant de rédiger.', 'Produire section par section et vérifier les sources et les promesses.', 'Corriger localement, puis décliner le document dans d’autres formats.'], takeaway: 'Un plan de document validable et une méthode en six étapes pour rédiger, vérifier, corriger et décliner vos documents.', audience: 'Professionnels qui produisent des documents engageants ou récurrents.', prerequisites: 'Aucun prérequis.' },
-      { id: 'services-notion-base', date: '2026-11-03', title: 'Découvrir Notion et créer sa première base', duration: '1 h 30', publicPrice: '79 €', memberPrice: '69 €', hook: 'Construire dès la première séance une base Notion utile à son activité.', learn: ['Comprendre pages, bases, propriétés et vues.', 'Définir ce que l’on souhaite suivre.', 'Créer les propriétés utiles et les premières vues.', 'Tester la base avec de vraies informations.'], takeaway: 'Une première base Notion fonctionnelle, adaptée à votre besoin.' },
-      { id: 'services-mission-client', date: '2026-11-10', title: 'Gérer une mission client de A à Z avec l’IA', duration: '2 h 30', publicPrice: '119 €', memberPrice: '99 €', hook: 'Transformer une mission client réelle en méthode claire, suivie et réutilisable.', learn: ['Structurer la demande.', 'Identifier les informations et documents nécessaires.', 'Découper la mission en actions.', 'Suivre attentes, échéances et validations.', 'Préparer productions, demandes de pièces et relances.', 'Formaliser une méthode réutilisable.'], takeaway: 'Votre propre méthode de gestion de mission, une trame de suivi et vos consignes IA réutilisables.' },
-      { id: 'services-notion-dashboard', date: '2026-11-17', title: 'Construire son tableau de bord avec Notion', duration: '2 h 30', publicPrice: '139 €', memberPrice: '119 €', hook: 'Regroupez au même endroit ce que vous devez réellement suivre pour piloter votre activité.', format: 'Visio', learn: ['Définir les informations et indicateurs à suivre.', 'Construire les vues adaptées à votre usage.', 'Mettre en place une structure qui pourra évoluer.'], takeaway: 'Un dashboard fonctionnel, des vues adaptées, des informations utiles et une structure réutilisable et évolutive.', audience: 'Professionnels connaissant les bases de Notion et disposant d’un cas d’usage réel.', prerequisites: 'Être autonome avec une IA conversationnelle, connaître les bases de Notion, disposer d’un compte Notion et venir avec un cas d’usage réel.' },
-      { id: 'services-donnees-ia', date: '2026-11-24', title: 'Exploiter ses données avec l’IA', duration: '1 h 30', publicPrice: '79 €', memberPrice: '69 €', hook: 'Faites parler vos données pour repérer ce qui compte vraiment et faciliter vos décisions.', environments: ['ChatGPT — 9h à 10h30', 'Claude — 11h à 12h30'], format: 'Visio', learn: ['Distinguer la donnée, le calcul et le constat.', 'Repérer l’interprétation, l’hypothèse et la recommandation.', 'Relire les conclusions avant d’en faire une décision.'], takeaway: 'Une grille de lecture distinguant données, calculs, constats, hypothèses et recommandations, à appliquer à vos analyses.', audience: 'Professionnels qui analysent des données pour suivre leur activité ou prendre des décisions.', prerequisites: 'Aucun prérequis.' },
-      { id: 'services-google-dashboard', date: '2026-12-01', title: 'Construire son tableau de bord avec Google Workspace', duration: '2 h 30', publicPrice: '139 €', memberPrice: '119 €', hook: 'Construire dans votre environnement Google l’outil de suivi dont vous avez réellement besoin.', learn: ['Définir les informations à piloter.', 'Structurer données, statuts et échéances.', 'Créer les indicateurs utiles.', 'Mobiliser selon le besoin Sheets, Forms, Drive, Agenda ou Tasks.', 'Tester sur de vraies données.'], takeaway: 'Votre tableau de bord Google Workspace fonctionnel, avec ses premières vues et indicateurs.' },
+      { id: 'services-personnaliser-ia', title: 'Personnaliser son IA', duration: '1 h 30', publicPrice: '79 €', memberPrice: '69 €', hook: 'Configurez votre IA pour qu’elle comprenne votre activité, votre contexte, votre ton et votre façon de travailler.', format: 'Visio', learn: ['Configurer votre activité, votre contexte, votre rôle et vos interlocuteurs.', 'Définir votre ton, vos préférences, vos règles récurrentes et vos interdits.', 'Tester la personnalisation sur de vraies demandes et l’ajuster.'], takeaway: 'Un profil de référence corrigé par vous, un environnement IA personnalisé et une méthode pour le tenir à jour.', audience: 'Professionnels qui veulent utiliser une IA conversationnelle dans leur activité.', prerequisites: 'Aucun prérequis.' },
+      { id: 'services-documents-ia', title: 'Créer ses documents professionnels avec l’IA', duration: '1 h 30', publicPrice: '79 €', memberPrice: '69 €', hook: 'Passez de vos informations au document professionnel final sans perdre des heures sur la structure et la rédaction.', format: 'Visio', learn: ['Cadrer le besoin et valider le plan avant de rédiger.', 'Produire section par section et vérifier les sources et les promesses.', 'Corriger localement, puis décliner le document dans d’autres formats.'], takeaway: 'Un plan de document validable et une méthode en six étapes pour rédiger, vérifier, corriger et décliner vos documents.', audience: 'Professionnels qui produisent des documents engageants ou récurrents.', prerequisites: 'Aucun prérequis.' },
+      { id: 'services-notion-base', title: 'Découvrir Notion et créer sa première base', duration: '1 h 30', publicPrice: '79 €', memberPrice: '69 €', hook: 'Construire dès la première séance une base Notion utile à son activité.', learn: ['Comprendre pages, bases, propriétés et vues.', 'Définir ce que l’on souhaite suivre.', 'Créer les propriétés utiles et les premières vues.', 'Tester la base avec de vraies informations.'], takeaway: 'Une première base Notion fonctionnelle, adaptée à votre besoin.' },
+      { id: 'services-mission-client', title: 'Gérer une mission client de A à Z avec l’IA', duration: '2 h 30', publicPrice: '119 €', memberPrice: '99 €', hook: 'Transformer une mission client réelle en méthode claire, suivie et réutilisable.', learn: ['Structurer la demande.', 'Identifier les informations et documents nécessaires.', 'Découper la mission en actions.', 'Suivre attentes, échéances et validations.', 'Préparer productions, demandes de pièces et relances.', 'Formaliser une méthode réutilisable.'], takeaway: 'Votre propre méthode de gestion de mission, une trame de suivi et vos consignes IA réutilisables.' },
+      { id: 'services-notion-dashboard', title: 'Construire son tableau de bord avec Notion', duration: '2 h 30', publicPrice: '139 €', memberPrice: '119 €', hook: 'Regroupez au même endroit ce que vous devez réellement suivre pour piloter votre activité.', format: 'Visio', learn: ['Définir les informations et indicateurs à suivre.', 'Construire les vues adaptées à votre usage.', 'Mettre en place une structure qui pourra évoluer.'], takeaway: 'Un dashboard fonctionnel, des vues adaptées, des informations utiles et une structure réutilisable et évolutive.', audience: 'Professionnels connaissant les bases de Notion et disposant d’un cas d’usage réel.', prerequisites: 'Être autonome avec une IA conversationnelle, connaître les bases de Notion, disposer d’un compte Notion et venir avec un cas d’usage réel.' },
+      { id: 'services-donnees-ia', title: 'Exploiter ses données avec l’IA', duration: '1 h 30', publicPrice: '79 €', memberPrice: '69 €', hook: 'Faites parler vos données pour repérer ce qui compte vraiment et faciliter vos décisions.', format: 'Visio', learn: ['Distinguer la donnée, le calcul et le constat.', 'Repérer l’interprétation, l’hypothèse et la recommandation.', 'Relire les conclusions avant d’en faire une décision.'], takeaway: 'Une grille de lecture distinguant données, calculs, constats, hypothèses et recommandations, à appliquer à vos analyses.', audience: 'Professionnels qui analysent des données pour suivre leur activité ou prendre des décisions.', prerequisites: 'Aucun prérequis.' },
+      { id: 'services-google-dashboard', title: 'Construire son tableau de bord avec Google Workspace', duration: '2 h 30', publicPrice: '139 €', memberPrice: '119 €', hook: 'Construire dans votre environnement Google l’outil de suivi dont vous avez réellement besoin.', learn: ['Définir les informations à piloter.', 'Structurer données, statuts et échéances.', 'Créer les indicateurs utiles.', 'Mobiliser selon le besoin Sheets, Forms, Drive, Agenda ou Tasks.', 'Tester sur de vraies données.'], takeaway: 'Votre tableau de bord Google Workspace fonctionnel, avec ses premières vues et indicateurs.' },
       { id: 'services-notebooklm', title: 'Exploiter ses documents et ses sources avec NotebookLM', duration: '1 h 30', publicPrice: '79 €', memberPrice: '69 €', hook: 'Transformez vos propres documents en une source de réponses, d’idées et de contenus immédiatement exploitables.', format: 'Visio', learn: ['Organiser les documents qui serviront de sources de référence.', 'Formuler des demandes à partir de ces sources pour obtenir des réponses et des synthèses utiles.', 'Vérifier les éléments à retenir avant de les réutiliser.'], takeaway: 'Une méthode pour exploiter vos propres documents comme base de réponses, d’idées et de contenus.', audience: 'Professionnels qui travaillent à partir de documents et de sources propres à leur activité.' },
       { id: 'services-priorites', title: 'Organiser ses priorités, échéances et relances', duration: '2 h 30', publicPrice: '119 €', memberPrice: '99 €', hook: 'Savoir chaque jour quoi faire, quoi surveiller et quoi relancer.', learn: ['Distinguer actions, attentes, échéances, relances, récurrences et vigilances.', 'Définir ses règles de priorité.', 'Structurer ses vues quotidiennes et hebdomadaires.', 'Utiliser l’IA pour préparer le suivi et les relances.'], takeaway: 'Votre méthode personnelle de pilotage, vos règles et une organisation directement utilisable.' }
     ];
@@ -135,7 +69,7 @@
     function prices(item) { return '<div class="catalog-card-prices"><p>Tarif public<br><strong>' + item.publicPrice + '</strong></p><p class="catalog-member">Tarif In10<br><strong>' + item.memberPrice + '</strong></p></div>'; }
     function environments(item) { return item.environments ? '<div class="catalog-environments"><strong>Choisissez votre environnement</strong>' + item.environments.map(function (environment) { return '<span>' + environment + '</span>'; }).join('') + '</div>' : ''; }
     function practicalFacts(item) {
-      var nextSession = item.date ? '<div><dt>Prochaine session</dt><dd>' + formatDate(item.date) + '</dd></div>' : '';
+      var nextSession = '';
       return '<section class="catalog-detail-block catalog-practical-info"><h3>Informations pratiques</h3><dl class="catalog-detail-facts">' + nextSession + '<div><dt>Durée</dt><dd>' + item.duration + '</dd></div><div><dt>Tarif public</dt><dd>' + item.publicPrice + '</dd></div><div><dt>Tarif In10</dt><dd>' + item.memberPrice + '</dd></div>' + (item.format ? '<div><dt>Format</dt><dd>' + item.format + '</dd></div>' : '') + (item.environments ? '<div><dt>Choisissez votre environnement</dt><dd>' + item.environments.join('<br>') + '</dd></div>' : '') + '</dl></section>';
     }
 
@@ -152,7 +86,7 @@
     services.innerHTML = '<div class="catalog-all-formations-heading"><h3>Toutes les formations</h3><p>Retrouvez l’ensemble des ateliers disponibles, avec ou sans date programmée.</p></div><div class="catalog-grid"></div>';
     var grid = services.querySelector('.catalog-grid');
     programme.forEach(function (item) {
-      courseConfiguration[item.id] = { status: 'open', sessions: item.date ? [{ date: item.date }] : [], environments: item.environments || [], duration: item.duration };
+      courseConfiguration[item.id] = { status: 'open', sessions: [], duration: item.duration };
       var card = document.createElement('article');
       card.className = 'catalog-card'; card.dataset.course = item.id;
       card.innerHTML = '<h4>' + item.title + '</h4><p class="catalog-card-hook">' + item.hook + '</p><div class="catalog-meta"><span>' + item.duration + '</span></div>' + environments(item) + prices(item) + '<button class="catalog-detail-button" type="button" data-catalog-open="' + item.id + '" aria-label="Voir le détail : ' + item.title + '">Voir le détail →</button>';
@@ -201,9 +135,9 @@
       { id: 'generateur-visuels', title: 'Construire son générateur de visuels' },
       { id: 'tableau-pilotage', title: 'Construire son tableau de pilotage' },
       { id: 'mini-outil', title: 'Construire son mini-outil métier' },
-      { id: 'ia-methodes', title: 'IA & Méthodes', meta: '<span>7 h</span><span>2 × 3 h 30</span><span>Visio</span><span>4 à 8 participants</span>', organization: '7 h organisées en 2 × 3 h 30.', duration: '7 h', sessions: [{ date: '2026-12-08', label: 'Séance 1', duration: '3 h 30' }, { date: '2026-12-15', label: 'Séance 2', duration: '3 h 30' }], intersession: 'Travail intersession sur une situation professionnelle réelle entre les deux séances.' },
-      { id: 'communication-ia', title: 'Communication & IA', meta: '<span>7 h</span><span>2 × 3 h 30</span><span>Visio</span><span>4 à 8 participants</span>', organization: '7 h organisées en 2 × 3 h 30.' },
-      { id: 'pilotage-ia', title: 'Pilotage & IA', meta: '<span>7 h</span><span>2 × 3 h 30</span><span>Visio</span><span>4 à 8 participants</span>', organization: '7 h organisées en 2 × 3 h 30.' }
+      { id: 'ia-methodes', title: 'IA & Méthodes' },
+      { id: 'communication-ia', title: 'Communication & IA' },
+      { id: 'pilotage-ia', title: 'Pilotage & IA' }
     ].forEach(restoreLegacyCourse);
     universe.appendChild(services);
   }
@@ -236,90 +170,144 @@
     root.querySelector('.catalog-filters').appendChild(filter);
   }
 
+  function todayKey() {
+    return new Intl.DateTimeFormat('fr-CA', { timeZone: 'Europe/Paris', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+  }
+
+  function registrationFor(id) {
+    var template = root.querySelector('#catalog-template-' + id);
+    var specific = template && Array.from(template.content.querySelectorAll('a[href]')).find(function (link) {
+      try { return /(^|\.)(billetweb\.fr|qualiobee\.fr)$/.test(new URL(link.href).hostname); } catch (error) { return false; }
+    });
+    if (specific) registrationLinks[id] = specific.href;
+    return registrationLinks[id] || programming.registration;
+  }
+
+  function appendFacts(article, pairs) {
+    var facts = document.createElement('dl');
+    facts.className = 'catalog-detail-facts catalog-approved-facts';
+    pairs.forEach(function (pair) {
+      if (!pair[1]) return;
+      var row = document.createElement('div'), term = document.createElement('dt'), value = document.createElement('dd');
+      term.textContent = pair[0]; value.textContent = pair[1]; row.append(term, value); facts.appendChild(row);
+    });
+    article.appendChild(facts);
+  }
+
+  // La programmation validée prime sur les anciennes sessions du catalogue et du Hub.
+  // Les autres organismes et leurs contenus restent gérés par leur source existante.
+  function applyValidatedProgramming() {
+    var universe = root.querySelector('[data-catalog-universe="ia"]');
+    var services = universe.querySelector('.catalog-all-formations');
+    var groups = {};
+    [
+      ['ai', programming.aiHeading, programming.aiSubtitle],
+      ['enter', programming.enterHeading, programming.enterSubtitle],
+      ['pass', '🎓 Pass IA 360°', '3 journées en présentiel en Gironde · 1 920 € net · 4 à 7 personnes · Finançable']
+    ].forEach(function (entry) {
+      var section = universe.querySelector('[data-training-format="' + entry[0] + '"]');
+      if (!section) {
+        section = document.createElement('section'); section.className = 'catalog-format-section'; section.dataset.trainingFormat = entry[0];
+        var heading = document.createElement('div'); heading.className = 'catalog-all-formations-heading';
+        var title = document.createElement('h3'); title.textContent = entry[1];
+        var subtitle = document.createElement('p'); subtitle.textContent = entry[2]; heading.append(title, subtitle);
+        var grid = document.createElement('div'); grid.className = 'catalog-grid'; section.append(heading, grid); services.before(section);
+      }
+      groups[entry[0]] = section.querySelector('.catalog-grid');
+    });
+    services.querySelector('h3').textContent = 'Autres formations et outils';
+    services.querySelector('.catalog-all-formations-heading p').textContent = 'Des formations complémentaires, à programmer selon votre besoin.';
+    Object.keys(programming.courses).forEach(function (key) {
+      var definition = programming.courses[key], format = programming.formats[definition.kind];
+      var id = definition.id;
+      var card = root.querySelector('.catalog-card[data-course="' + id + '"]');
+      if (!card) {
+        card = document.createElement('article'); card.className = 'catalog-card'; card.dataset.course = id;
+        card.innerHTML = '<h4></h4><div class="catalog-meta"></div><div class="catalog-card-prices"></div><button type="button" class="catalog-detail-button">Voir le détail →</button>';
+      }
+      var template = root.querySelector('#catalog-template-' + id);
+      if (!template) {
+        template = document.createElement('template'); template.id = 'catalog-template-' + id;
+        template.innerHTML = '<article class="catalog-detail"><h2></h2></article>'; root.appendChild(template);
+      }
+      registrationFor(id);
+      var article = template.content.querySelector('.catalog-detail') || template.content;
+      template.content.querySelector('h2').textContent = definition.title;
+      // Retirer uniquement les anciennes modalités commerciales et les anciennes dates.
+      article.querySelectorAll('.catalog-detail-facts, .catalog-detail-prices, .catalog-practical-info, .catalog-environments, .catalog-approved-cta').forEach(function (element) { element.remove(); });
+      article.querySelectorAll('.catalog-detail-block').forEach(function (block) {
+        var title = block.querySelector('h3');
+        if (title && (title.textContent === 'Organisation' || title.textContent === 'Prochaines sessions' || (format.funding && title.textContent === 'Financement'))) block.remove();
+      });
+      article.querySelectorAll('p').forEach(function (paragraph) { if (/Travail intersession/.test(paragraph.textContent)) paragraph.remove(); });
+      card.querySelector('h4').textContent = definition.title;
+      card.dataset.trainingKind = definition.kind;
+      var meta = card.querySelector('.catalog-meta'); meta.replaceChildren();
+      [definition.kind === 'PASS' ? format.duration : definition.kind + ' · ' + format.duration, format.format, format.participants].forEach(function (text) {
+        var span = document.createElement('span'); span.textContent = text; meta.appendChild(span);
+      });
+      card.querySelectorAll('.catalog-environments, .catalog-financing-badge').forEach(function (element) { element.remove(); });
+      if (format.funding) {
+        var badge = document.createElement('span'); badge.className = 'catalog-financing-badge'; badge.textContent = format.funding; meta.after(badge);
+      }
+      var prices = card.querySelector('.catalog-card-prices');
+      if (!prices) { prices = document.createElement('div'); prices.className = 'catalog-card-prices'; card.appendChild(prices); }
+      prices.replaceChildren();
+      var publicPrice = definition.price || format.price, memberPrice = definition.memberPrice || format.memberPrice;
+      [['Tarif public', publicPrice], ['Membre In10pensables', memberPrice]].forEach(function (entry) {
+        if (!entry[1]) return;
+        var p = document.createElement('p'); p.append(document.createTextNode(entry[0]), document.createElement('br'));
+        var strong = document.createElement('strong'); strong.textContent = entry[1]; p.appendChild(strong); prices.appendChild(p);
+      });
+      var button = card.querySelector('[data-catalog-open], .catalog-detail-button');
+      button.dataset.catalogOpen = id; button.setAttribute('aria-label', 'Voir le détail : ' + definition.title);
+      button.setAttribute('aria-haspopup', 'dialog'); button.setAttribute('aria-controls', 'catalog-details');
+      appendFacts(article, [['Format', definition.kind + ' · ' + format.format], ['Durée', format.duration], ['Horaires', format.hours], ['Tarif public', publicPrice], ['Tarif membre In10pensables', memberPrice], ['Participants', format.participants], ['Financement', format.funding], ['Sur place', format.meals], ['Votre outil', /CTRL|CMD/.test(definition.kind) ? 'ChatGPT, Claude ou Gemini' : '']]);
+      var cta = document.createElement('p'); cta.className = 'catalog-external-cta catalog-approved-cta';
+      var link = document.createElement('a'); link.className = 'btn'; link.href = registrationFor(id); link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = 'Informations & inscription ↗'; cta.appendChild(link); article.appendChild(cta);
+      groups[definition.kind === 'ENTER' ? 'enter' : definition.kind === 'PASS' ? 'pass' : 'ai'].appendChild(card);
+      courseConfiguration[id] = { status: 'open', duration: format.duration, sessions: programming.sessions.filter(function (session) { return session.courseId === id; }) };
+    });
+    // Le parcours CPF et son vrai CTA restent intacts, y compris après une réponse Hub.
+    if (cpfReference && cpfCardReference) {
+      root.querySelector('#catalog-template-cpf-rs7311').content.replaceChildren(cpfReference.cloneNode(true));
+      root.querySelector('.catalog-card[data-course="cpf-rs7311"]').replaceWith(cpfCardReference.cloneNode(true));
+    }
+  }
+
   function configureCards() {
     root.querySelectorAll('.catalog-card[data-course]').forEach(function (card) {
-      var config = courseConfiguration[card.dataset.course] || {};
-      var status = validStatuses.indexOf(config.status) > -1 ? config.status : 'open';
-      card.dataset.catalogStatus = status;
-      card.hidden = status === 'hidden';
+      var id = card.dataset.course;
+      var config = courseConfiguration[id] || { sessions: [] };
+      card.dataset.catalogStatus = validStatuses.indexOf(config.status) > -1 ? config.status : 'open';
+      card.hidden = card.dataset.catalogStatus === 'hidden';
+      card.querySelectorAll('.catalog-course-status, .catalog-next-session').forEach(function (element) { element.remove(); });
       var sessions = config.sessions || [];
-      var statusLabel = document.createElement('span');
-      statusLabel.className = 'catalog-course-status catalog-course-status--' + (sessions.length ? 'open' : 'unscheduled');
-      statusLabel.textContent = sessions.length ? 'Prochaine session : ' + formatShortDate(sessions[0].date) : 'À VENIR';
-      if (statusLabel.textContent) card.querySelector('h4').insertAdjacentElement('afterend', statusLabel);
-      var timedSessions = sessions.filter(function (session) { return session.time; });
-      if (timedSessions.length) {
-        var template = root.querySelector('#catalog-template-' + card.dataset.course);
-        if (template) {
-          var sessionBlock = document.createElement('section');
-          sessionBlock.className = 'catalog-detail-block';
-          sessionBlock.innerHTML = '<h3>Prochaines sessions</h3><ul>' + timedSessions.map(function (session) {
-            return '<li>' + formatDate(session.date) + ' · ' + session.time + '</li>';
-          }).join('') + '</ul>';
-          template.content.querySelector('.catalog-detail-lead').insertAdjacentElement('afterend', sessionBlock);
-        }
+      var upcoming = sessions.filter(function (session) { return (session.dates ? session.dates[session.dates.length - 1] : session.date) >= todayKey(); });
+      var status = document.createElement('span');
+      status.className = 'catalog-course-status catalog-course-status--' + (upcoming.length ? 'open' : 'unscheduled');
+      status.textContent = upcoming.length ? 'Prochaine session : ' + formatShortDate(upcoming[0].date) : 'À VENIR';
+      card.querySelector('h4').after(status);
+      if (upcoming[0] && upcoming[0].dates) {
+        var dates = document.createElement('p'); dates.className = 'catalog-next-session';
+        dates.textContent = upcoming[0].label + ' · ' + upcoming[0].dates.map(formatShortDate).join(' / ');
+        status.after(dates);
       }
-      if (config.intersession) {
-        var session = document.createElement('p');
-        session.className = 'catalog-next-session';
-        session.textContent = config.intersession;
-        card.querySelector('.catalog-meta').insertAdjacentElement('afterend', session);
-        var detailTemplate = root.querySelector('#catalog-template-' + card.dataset.course);
-        var detailContent = detailTemplate && detailTemplate.content.querySelector('.catalog-detail');
-        if (detailContent) detailContent.insertAdjacentHTML('beforeend', '<p><strong>' + config.intersession + '</strong></p>');
-      }
-    });
-  }
-
-  function createTopic(topic, cards) {
-    var section = document.createElement('details');
-    section.className = 'catalog-topic';
-    var summary = document.createElement('summary');
-    summary.className = 'catalog-topic-heading';
-    var title = document.createElement('h3');
-    title.textContent = topic.title;
-    var hook = document.createElement('p');
-    hook.textContent = topic.hook;
-    var stats = document.createElement('small');
-    stats.dataset.catalogTopicStats = '';
-    summary.append(title, hook, stats);
-    var grid = document.createElement('div');
-    grid.className = 'catalog-grid catalog-topic-grid';
-    cards.forEach(function (card) { grid.appendChild(card); });
-    section.append(summary, grid);
-    return section;
-  }
-
-  function buildTopics() {
-    var iaGrid = root.querySelector('[data-catalog-universe="ia"] .catalog-grid');
-    if (!iaGrid) return;
-    var cardsById = new Map(Array.from(iaGrid.querySelectorAll('.catalog-card')).map(function (card) { return [card.dataset.course, card]; }));
-    var topicList = document.createElement('div');
-    topicList.className = 'catalog-topic-list';
-    iaTopics.forEach(function (topic) {
-      var cards = topic.courses.map(function (id) { return cardsById.get(id); }).filter(Boolean);
-      cards.sort(function (a, b) {
-        var aConfig = courseConfiguration[a.dataset.course] || {};
-        var bConfig = courseConfiguration[b.dataset.course] || {};
-        var aDate = aConfig.sessions && aConfig.sessions[0] ? aConfig.sessions[0].date : '';
-        var bDate = bConfig.sessions && bConfig.sessions[0] ? bConfig.sessions[0].date : '';
-        if (aDate && bDate) return aDate.localeCompare(bDate);
-        if (aDate) return -1;
-        if (bDate) return 1;
-        return (aConfig.status === 'open' ? -1 : 1) - (bConfig.status === 'open' ? -1 : 1);
+      var template = root.querySelector('#catalog-template-' + id);
+      if (!template) return;
+      template.content.querySelectorAll('.catalog-session-list').forEach(function (element) { element.remove(); });
+      if (!sessions.length) return;
+      var block = document.createElement('section'); block.className = 'catalog-detail-block catalog-session-list';
+      var title = document.createElement('h3'); title.textContent = 'Sessions programmées'; block.appendChild(title);
+      var list = document.createElement('ul');
+      sessions.forEach(function (session) {
+        var item = document.createElement('li');
+        item.textContent = (session.label ? session.label + ' · ' : '') + (session.dates ? session.dates.map(formatDate).join(' / ') : formatDate(session.date)) + (session.time ? ' · ' + session.time : '');
+        list.appendChild(item);
       });
-      topicList.appendChild(createTopic(topic, cards));
+      block.appendChild(list);
+      (template.content.querySelector('.catalog-detail') || template.content).appendChild(block);
     });
-    var funding = cardsById.get('rentabilite-tpe-ia');
-    iaGrid.remove();
-    if (funding) {
-      var fundingBlock = document.createElement('aside');
-      fundingBlock.className = 'catalog-specific-feature';
-      fundingBlock.innerHTML = '<p class="catalog-funding-kicker">Formation spécifique</p>';
-      fundingBlock.appendChild(funding);
-      root.querySelector('[data-catalog-universe="ia"]').appendChild(fundingBlock);
-    }
-    root.querySelector('[data-catalog-universe="ia"]').appendChild(topicList);
   }
 
   function visibleCards(scope) {
@@ -435,26 +423,32 @@
 
   function getScheduledSessions() {
     var sessions = [];
-    // Toutes les configurations actives, indépendamment du domaine ou du filtre affiché.
     Object.keys(courseConfiguration).forEach(function (id) {
       var config = courseConfiguration[id];
       var card = root.querySelector('.catalog-card[data-course="' + id + '"]');
-      // Les anciennes configurations IA sans carte ne font plus partie du catalogue.
       if (!card || config.status === 'hidden') return;
       (config.sessions || []).forEach(function (session) {
-        sessions.push({ date: session.date, time: session.time || '', environments: config.environments || [], label: session.label || '', title: card.querySelector('h4').textContent, domain: card.closest('[data-catalog-universe]').dataset.catalogUniverse });
+        (session.dates || [session.date]).forEach(function (date, index) {
+          sessions.push({
+            courseId: id, kind: session.kind || '', date: date, start: session.start || session.time || '',
+            time: session.time || '', label: session.label || '', day: session.dates ? index + 1 : 0,
+            title: card.querySelector('h4').textContent, domain: card.closest('[data-catalog-universe]').dataset.catalogUniverse
+          });
+        });
       });
     });
-    sessions.sort(function (a, b) { return a.date.localeCompare(b.date); });
+    sessions.sort(function (a, b) { return (a.date + a.start).localeCompare(b.date + b.start); });
     return sessions;
   }
 
   function buildSessionsCalendar() {
-    var sessions = getScheduledSessions();
+    var firstMonth = programming.sessions[0].date.slice(0, 7);
+    var lastMonth = programming.sessions[programming.sessions.length - 1].date.slice(0, 7);
+    var sessions = getScheduledSessions().filter(function (session) { var month = session.date.slice(0, 7); return month >= firstMonth && month <= lastMonth; });
     if (!sessions.length) return;
     var section = document.createElement('section');
     section.className = 'catalog-sessions-calendar';
-    section.innerHTML = '<div class="catalog-calendar-heading"><p class="catalog-upcoming-kicker">Prochaines sessions</p><h2>Les dates à retenir</h2><p>Les sessions publiées, tous intervenants confondus.</p></div><div class="catalog-calendar-months" role="tablist" aria-label="Mois de formation"></div><div class="catalog-calendar-panel"></div>';
+    section.innerHTML = '<div class="catalog-calendar-heading"><p class="catalog-upcoming-kicker">Prochaines sessions</p><h2>Les dates à retenir</h2><p>Ateliers, journées ENTER et Pass IA 360°. Retrouvez chaque horaire et les informations d’inscription dans la fiche.</p></div><div class="catalog-calendar-months" role="tablist" aria-label="Mois de formation"></div><div class="catalog-calendar-panel" role="tabpanel" id="catalog-calendar-panel"></div>';
     var groups = new Map();
     sessions.forEach(function (session) {
       var key = session.date.slice(0, 7);
@@ -464,32 +458,65 @@
     var monthKeys = Array.from(groups.keys());
     var monthButtons = section.querySelector('.catalog-calendar-months');
     var panel = section.querySelector('.catalog-calendar-panel');
-    function monthLabel(key) {
-      return new Intl.DateTimeFormat('fr-FR', { month: 'long' }).format(new Date(key + '-01T12:00:00'));
-    }
     function showMonth(key) {
       panel.replaceChildren();
-      monthButtons.querySelectorAll('button').forEach(function (button) { button.setAttribute('aria-selected', String(button.dataset.catalogMonth === key)); });
+      panel.setAttribute('aria-labelledby', 'catalog-month-' + key);
+      monthButtons.querySelectorAll('button').forEach(function (button) {
+        var active = button.dataset.catalogMonth === key;
+        button.setAttribute('aria-selected', String(active)); button.tabIndex = active ? 0 : -1;
+      });
+      var dates = new Map();
       groups.get(key).forEach(function (session) {
-        var button = document.createElement('button');
-        button.type = 'button'; button.className = 'catalog-calendar-session'; button.dataset.catalogOpenDomain = session.domain;
-        button.innerHTML = '<strong>' + formatShortDate(session.date) + '</strong><span>' + session.title + (session.label ? ' — ' + session.label : '') + (session.time ? ' · ' + session.time : '') + (session.environments.length ? ' · ' + session.environments.join(' / ') : '') + '</span>';
-        button.addEventListener('click', function () {
-          var filter = root.querySelector('[data-catalog-filter="' + session.domain + '"]');
-          if (filter) filter.click();
+        if (!dates.has(session.date)) dates.set(session.date, []);
+        dates.get(session.date).push(session);
+      });
+      dates.forEach(function (items, date) {
+        var day = document.createElement('article'); day.className = 'catalog-calendar-day';
+        var heading = document.createElement('h3'); heading.textContent = formatDate(date); day.appendChild(heading);
+        var editorial = document.createElement('p'); editorial.className = 'catalog-calendar-editorial';
+        if (items.some(function (item) { return item.kind === 'ENTER'; })) editorial.textContent = programming.enterHeading;
+        else if (items.some(function (item) { return /CTRL|CMD/.test(item.kind); }) && new Date(date + 'T12:00:00').getDay() === 2) editorial.textContent = programming.aiHeading;
+        else if (items.some(function (item) { return item.kind === 'PASS'; })) editorial.textContent = '🎓 Pass IA 360°';
+        if (editorial.textContent) day.appendChild(editorial);
+        items.forEach(function (session) {
+          var button = document.createElement('button');
+          button.type = 'button'; button.className = 'catalog-calendar-session'; button.dataset.catalogOpen = session.courseId;
+          button.dataset.sessionDate = date; button.dataset.sessionStart = session.start; button.dataset.sessionKind = session.kind;
+          button.setAttribute('aria-haspopup', 'dialog'); button.setAttribute('aria-controls', 'catalog-details');
+          var title = document.createElement('strong'); title.textContent = (session.kind ? session.kind + ' · ' : '') + session.title;
+          var time = document.createElement('span'); time.textContent = session.time;
+          button.append(title, time);
+          if (session.label) {
+            var label = document.createElement('span'); label.textContent = session.label + (session.day ? ' · Jour ' + session.day + '/3' : ''); button.appendChild(label);
+          }
+          if (programming.formats[session.kind] && programming.formats[session.kind].funding) {
+            var badge = document.createElement('span'); badge.className = 'catalog-financing-badge'; badge.textContent = programming.formats[session.kind].funding; button.appendChild(badge);
+          }
+          day.appendChild(button);
         });
-        panel.appendChild(button);
+        panel.appendChild(day);
       });
     }
     monthKeys.forEach(function (key, index) {
       var button = document.createElement('button');
-      button.type = 'button'; button.dataset.catalogMonth = key; button.setAttribute('role', 'tab'); button.setAttribute('aria-selected', String(index === 0));
-      button.textContent = monthLabel(key);
+      button.type = 'button'; button.id = 'catalog-month-' + key; button.dataset.catalogMonth = key;
+      button.setAttribute('role', 'tab'); button.setAttribute('aria-controls', panel.id); button.setAttribute('aria-selected', String(index === 0));
+      button.textContent = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(new Date(key + '-01T12:00:00'));
       button.addEventListener('click', function () { showMonth(key); });
+      button.addEventListener('keydown', function (event) {
+        var target;
+        if (event.key === 'ArrowRight') target = (index + 1) % monthKeys.length;
+        if (event.key === 'ArrowLeft') target = (index + monthKeys.length - 1) % monthKeys.length;
+        if (event.key === 'Home') target = 0;
+        if (event.key === 'End') target = monthKeys.length - 1;
+        if (target === undefined) return;
+        event.preventDefault(); showMonth(monthKeys[target]); monthButtons.children[target].focus();
+      });
       monthButtons.appendChild(button);
     });
-    showMonth(monthKeys[0]);
-    root.querySelector('#catalogue-formations .catalog-domain-content-zone').insertAdjacentElement('afterend', section);
+    var currentMonth = todayKey().slice(0, 7);
+    showMonth(groups.has(currentMonth) ? currentMonth : monthKeys[0]);
+    root.querySelector('#catalogue-formations .catalog-domain-content-zone').after(section);
   }
 
   // Correspondance stable avec les identifiants publiés par le Hub.
@@ -582,6 +609,7 @@
       }
       var openButton = card.querySelector('[data-catalog-open]');
       if (openButton) openButton.setAttribute('aria-label', 'Voir le détail : ' + titleText);
+      registrationFor(courseId);
       var template = root.querySelector('#catalog-template-' + courseId);
       if (!template) { template = document.createElement('template'); template.id = 'catalog-template-' + courseId; root.appendChild(template); }
       var article = document.createElement('article'); article.className = 'catalog-detail';
@@ -658,6 +686,8 @@
         block.appendChild(list); detail.appendChild(block);
       }
     });
+    applyValidatedProgramming();
+    configureCards();
     var calendar = root.querySelector('.catalog-sessions-calendar');
     if (calendar) calendar.remove();
     buildSessionsCalendar();
@@ -692,8 +722,10 @@
 
   createCommunicationDomain();
   filters = root.querySelectorAll('[data-catalog-filter]');
-  preparePreciseIaCourses();
   rebuildIaProgramming();
+  cpfReference = root.querySelector('#catalog-template-cpf-rs7311').content.cloneNode(true);
+  cpfCardReference = root.querySelector('.catalog-card[data-course="cpf-rs7311"]').cloneNode(true);
+  applyValidatedProgramming();
   configureCards();
   buildDomains();
   buildSessionsCalendar();
@@ -723,6 +755,8 @@
       if (!template) return;
       content.replaceChildren(template.content.cloneNode(true));
       content.querySelector('h2').id = 'catalog-detail-title';
+      var registration = root.querySelector('[data-catalog-contact]');
+      registration.href = registrationFor(button.dataset.catalogOpen);
       previousOverflow = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
       dialog.showModal();
@@ -744,10 +778,5 @@
     if (event.target === dialog && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) dialog.close();
   });
   dialog.addEventListener('close', function () { document.body.style.overflow = previousOverflow; });
-  root.querySelector('[data-catalog-contact]').addEventListener('click', function () {
-    dialog.close();
-    document.body.style.overflow = previousOverflow;
-    go('contact');
-  });
   window.applyHubPublicData = applyHubPublicData;
 })();

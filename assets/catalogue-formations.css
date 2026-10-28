@@ -290,3 +290,27 @@
 
 /* Statut discret des formations sans session programmée. */
 #p-training .catalog-card .catalog-course-status--unscheduled { border-color: #ddd3c9; background: #f7f3ee; color: var(--muted); font-weight: 700; }
+
+/* Programmation validée : ateliers du mardi, journées ENTER et Pass multi-jours. */
+#p-training .catalog-format-section { margin: 30px 0 38px; }
+#p-training .catalog-format-section .catalog-all-formations-heading p { max-width: 880px; line-height: 1.65; }
+#p-training .catalog-card[data-training-kind] .catalog-meta { display: flex; flex-wrap: wrap; gap: 5px 10px; }
+#p-training .catalog-card[data-training-kind] .catalog-meta span:not(:first-child) { display: inline; }
+#p-training .catalog-card[data-training-kind] .catalog-meta span { font-size: 11px; line-height: 1.5; }
+#p-training .catalog-financing-badge { display: inline-flex; align-self: flex-start; width: fit-content; padding: 4px 9px; border: 1px solid #798867; border-radius: 999px; background: #edf2e7; color: #3f5733; font-size: 11px; font-weight: 800; }
+#p-training .catalog-calendar-panel { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+#p-training .catalog-calendar-day { min-width: 0; padding: 18px; border: 1px solid #dfc9b8; border-radius: 14px; background: #fffaf5; }
+#p-training .catalog-calendar-day h3 { margin: 0 0 6px; color: var(--wine); font: 500 23px/1.2 Georgia, serif; }
+#p-training .catalog-calendar-editorial { margin: 0 0 13px; color: var(--wine); font-size: 13px; font-weight: 800; }
+#p-training .catalog-calendar-day .catalog-calendar-session { width: 100%; margin-top: 8px; gap: 6px; padding: 13px; cursor: pointer; overflow-wrap: anywhere; }
+#p-training .catalog-calendar-day .catalog-calendar-session:hover { background: #f6eadf; border-color: var(--copper); }
+#p-training .catalog-calendar-session:focus-visible, #p-training .catalog-calendar-months button:focus-visible { outline: 3px solid var(--wine); outline-offset: 3px; }
+#p-training .catalog-calendar-session .catalog-financing-badge { color: #3f5733; }
+#p-training .catalog-approved-facts { margin-top: 22px; }
+#p-training .catalog-session-list li + li { margin-top: 9px; }
+@media (max-width: 650px) {
+  #p-training .catalog-format-section { margin: 23px 0 28px; }
+  #p-training .catalog-calendar-panel { grid-template-columns: 1fr; }
+  #p-training .catalog-calendar-day { padding: 14px; }
+  #p-training .catalog-calendar-months button { flex: 1 1 130px; }
+}
