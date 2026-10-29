@@ -403,16 +403,13 @@
 
   function updateSummary() {
     var visible = visibleCards(root);
-    var sessions = getScheduledSessions();
-    var today = new Date();
-    var currentMonth = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0');
-    var todayKey = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
-    var thisMonth = sessions.filter(function (session) { return session.date.slice(0, 7) === currentMonth; }).length;
-    var upcoming = sessions.filter(function (session) { return session.date >= todayKey; }).length;
+    var sessions = getSessionsInNext30Days();
+    root.querySelectorAll('[data-catalog-summary="open"]').forEach(function (item) {
+      item.parentElement.remove();
+    });
     var metrics = [
       { selector: '[data-catalog-summary="visible"]', value: visible.length, label: 'formations au catalogue' },
-      { selector: '[data-catalog-summary="open"]', value: thisMonth, label: 'sessions ce mois-ci' },
-      { selector: '[data-catalog-summary="upcoming"]', value: upcoming, label: 'sessions à venir' }
+      { selector: '[data-catalog-summary="upcoming"]', value: sessions.length, label: 'sessions dans les 30 prochains jours' }
     ];
     metrics.forEach(function (metric) {
       root.querySelectorAll(metric.selector).forEach(function (item) {
@@ -446,14 +443,24 @@
     return today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
   }
 
+  function getSessionsInNext30Days() {
+    var today = calendarTodayKey();
+    // Addition de jours calendaires locaux, y compris aux changements d'heure et d'année.
+    var end = new Date(today + 'T12:00:00');
+    end.setDate(end.getDate() + 30);
+    var lastDay = end.getFullYear() + '-' + String(end.getMonth() + 1).padStart(2, '0') + '-' + String(end.getDate()).padStart(2, '0');
+    return getScheduledSessions().filter(function (session) {
+      return session.date >= today && session.date <= lastDay;
+    });
+  }
+
   function buildSessionsCalendar() {
     var previousCalendar = root.querySelector('.catalog-sessions-calendar');
     var selectedMonth = previousCalendar && previousCalendar.querySelector('[aria-selected="true"]');
     var preferredMonth = selectedMonth && selectedMonth.dataset.catalogMonth;
     if (previousCalendar) previousCalendar.remove();
-    // Tous les organismes, sans borne mensuelle ; les données historiques restent intactes.
-    var today = calendarTodayKey();
-    var sessions = getScheduledSessions().filter(function (session) { return session.date >= today; });
+    // Source commune au bandeau ; aucune session n'est supprimée des données.
+    var sessions = getSessionsInNext30Days();
     if (!sessions.length) return;
     var section = document.createElement('section');
     section.className = 'catalog-sessions-calendar';
@@ -735,6 +742,7 @@
     if (currentDate === calendarDate) return;
     calendarDate = currentDate;
     buildSessionsCalendar();
+    updateSummary();
   }
   window.setInterval(refreshCalendarDate, 60000);
   window.addEventListener('focus', refreshCalendarDate);
