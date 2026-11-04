@@ -245,7 +245,7 @@
       card.querySelector('h4').textContent = definition.title;
       card.dataset.trainingKind = definition.kind;
       var meta = card.querySelector('.catalog-meta'); meta.replaceChildren();
-      [definition.kind === 'PASS' || id === 'services-dashboard-ia' ? format.duration : definition.kind + ' · ' + format.duration, format.format, format.participants].forEach(function (text) {
+      [format.duration, format.format, format.participants].forEach(function (text) {
         var span = document.createElement('span'); span.textContent = text; meta.appendChild(span);
       });
       card.querySelectorAll('.catalog-environments, .catalog-financing-badge').forEach(function (element) { element.remove(); });
@@ -264,7 +264,7 @@
       var button = card.querySelector('[data-catalog-open], .catalog-detail-button');
       button.dataset.catalogOpen = id; button.setAttribute('aria-label', 'Voir le détail : ' + definition.title);
       button.setAttribute('aria-haspopup', 'dialog'); button.setAttribute('aria-controls', 'catalog-details');
-      appendFacts(article, [['Format', id === 'services-dashboard-ia' ? format.format : definition.kind + ' · ' + format.format], ['Durée', format.duration], ['Horaires', format.hours], ['Tarif public', publicPrice], ['Tarif membre In10pensables', memberPrice], ['Participants', format.participants], ['Financement', format.funding], ['Sur place', format.meals], ['Votre outil', id === 'services-dashboard-ia' ? 'Notion ou Google Workspace' : /CTRL|CMD/.test(definition.kind) ? 'ChatGPT, Claude ou Gemini' : '']]);
+      appendFacts(article, [['Format', format.format], ['Durée', format.duration], ['Horaires', format.hours], ['Tarif public', publicPrice], ['Tarif membre In10pensables', memberPrice], ['Participants', format.participants], ['Financement', format.funding], ['Sur place', format.meals], ['Votre outil', id === 'services-dashboard-ia' ? 'Notion ou Google Workspace' : /CTRL|CMD/.test(definition.kind) ? 'ChatGPT, Claude ou Gemini' : '']]);
       var cta = document.createElement('p'); cta.className = 'catalog-external-cta catalog-approved-cta';
       var link = document.createElement('a'); link.className = 'btn'; link.href = registrationFor(id); link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = 'Informations & inscription ↗'; cta.appendChild(link); article.appendChild(cta);
       groups[definition.kind === 'ENTER' ? 'enter' : definition.kind === 'PASS' ? 'pass' : 'ai'].appendChild(card);

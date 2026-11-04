@@ -75,9 +75,9 @@
   sessions.sort(function (a, b) { return (a.date + a.start).localeCompare(b.date + b.start); });
   window.IN10_TRAINING_PROGRAMMING = {
     registration: 'index.html#contact',
-    aiHeading: '💻 Le mardi, c’est AI',
-    aiSubtitle: 'Ateliers CTRL & CMD en visio, dans votre outil (ChatGPT, Claude ou Gemini).',
-    enterHeading: '🧭 Le mardi, c’est ENTER',
+    aiHeading: 'Formations IA',
+    aiSubtitle: 'Formations en visio, dans votre outil (ChatGPT, Claude ou Gemini).',
+    enterHeading: '🧭 Parcours thématiques en visio',
     enterSubtitle: '7 h en deux séances · 9 h–12 h 30 · 399 € net · 6 à 12 participants · Finançable',
     formats: formats, courses: courses, sessions: sessions
   };
