@@ -10,17 +10,17 @@
     PASS: { duration: '3 journées', format: 'Présentiel en Gironde', price: '1 920 € net', participants: '4 à 7 personnes', hours: '9 h–12 h 30 / 13 h 30–17 h', funding: 'Finançable', meals: 'Repas sur place' }
   };
   var courses = {
-    personnaliser: { id: 'services-personnaliser-ia', title: 'Personnaliser son IA', kind: 'CTRL' },
-    documents: { id: 'services-documents-ia', title: 'Créer ses documents professionnels avec l’IA', kind: 'CTRL' },
-    notion: { id: 'services-notion-base', title: 'Découvrir Notion et créer sa première base', kind: 'CTRL' },
-    mission: { id: 'services-mission-client', title: 'Gérer une mission client de A à Z avec l’IA', kind: 'CMD', price: '119 €', memberPrice: '99 €' },
-    notionDashboard: { id: 'services-notion-dashboard', title: 'Construire son tableau de bord avec Notion', kind: 'CMD', price: '139 €', memberPrice: '119 €' },
-    donnees: { id: 'services-donnees-ia', title: 'Exploiter ses données avec l’IA', kind: 'CTRL' },
-    googleDashboard: { id: 'services-google-dashboard', title: 'Construire son tableau de bord avec Google Workspace', kind: 'CMD', price: '139 €', memberPrice: '119 €' },
+    personnaliser: { id: 'services-personnaliser-ia', title: 'Personnaliser son IA', kind: 'CTRL', registration: 'https://www.billetweb.fr/personnaliser-son-ia' },
+    documents: { id: 'services-documents-ia', title: 'Créer ses documents professionnels avec l’IA', kind: 'CTRL', registration: 'https://www.billetweb.fr/creer-ses-documents-professionnels-avec-l-ia-chatgpt' },
+    notion: { id: 'services-notion-base', title: 'Découvrir Notion et créer sa première base', kind: 'CTRL', registration: 'https://www.billetweb.fr/decouvrir-notion-et-creer-sa-premiere-base' },
+    mission: { id: 'services-mission-client', title: 'Gérer une mission client de A à Z avec l’IA', kind: 'CMD', price: '119 €', memberPrice: '99 €', registration: 'https://www.billetweb.fr/gerer-une-mission-client-de-a-a-z-avec-l-ia' },
+    notionDashboard: { id: 'services-notion-dashboard', title: 'Construire son tableau de bord avec Notion', kind: 'CMD', price: '139 €', memberPrice: '119 €', registration: 'https://www.billetweb.fr/construire-son-tableau-de-bord-avec-notion' },
+    donnees: { id: 'services-donnees-ia', title: 'Exploiter ses données avec l’IA', kind: 'CTRL', registration: 'https://www.billetweb.fr/exploiter-ses-donnees-avec-l-ia-chatgpt' },
+    googleDashboard: { id: 'services-google-dashboard', title: 'Construire son tableau de bord avec Google Workspace', kind: 'CMD', price: '139 €', memberPrice: '119 €', registration: 'https://www.billetweb.fr/construire-son-tableau-de-bord-avec-google-workspace' },
     notebook: { id: 'services-notebooklm', title: 'NotebookLM : documents et sources', kind: 'CTRL' },
     priorites: { id: 'services-priorites', title: 'Organiser ses priorités, échéances et relances', kind: 'CMD', price: '119 €', memberPrice: '99 €' },
-    contenus: { id: 'contenus-ia', title: 'Créer ses contenus avec l’IA', kind: 'CTRL' },
-    visuels: { id: 'visuels-ia', title: 'Créer ses visuels professionnels avec l’IA', kind: 'CTRL' },
+    contenus: { id: 'contenus-ia', title: 'Créer ses contenus avec l’IA', kind: 'CTRL', registration: 'https://www.billetweb.fr/creer-ses-contenus-avec-l-ia-chatgpt' },
+    visuels: { id: 'visuels-ia', title: 'Créer ses visuels professionnels avec l’IA', kind: 'CTRL', registration: 'https://www.billetweb.fr/creer-ses-visuels-professionnels-avec-l-ia-chatgpt' },
     strategie: { id: 'strategie-communication-ia', title: 'Stratégie de communication', kind: 'CTRL' },
     quotidien: { id: 'alleger-quotidien-ia', title: 'Alléger son quotidien', kind: 'CTRL' },
     baseNotebook: { id: 'base-documentaire-notebooklm', title: 'Base documentaire NotebookLM', kind: 'CMD' },
@@ -83,7 +83,7 @@
   });
   sessions.sort(function (a, b) { return (a.date + a.start).localeCompare(b.date + b.start); });
   window.IN10_TRAINING_PROGRAMMING = {
-    registration: 'https://calendly.com/laurence-lrenov-ia/30min',
+    registration: 'index.html#contact',
     aiHeading: '💻 Le mardi, c’est AI',
     aiSubtitle: 'Ateliers CTRL & CMD en visio, dans votre outil (ChatGPT, Claude ou Gemini).',
     enterHeading: '🧭 Le jeudi, c’est ENTER',

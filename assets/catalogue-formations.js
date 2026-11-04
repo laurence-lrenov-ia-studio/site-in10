@@ -175,6 +175,8 @@
   }
 
   function registrationFor(id) {
+    var course = Object.values(programming.courses).find(function (item) { return item.id === id; });
+    if (course && course.registration) return course.registration;
     var template = root.querySelector('#catalog-template-' + id);
     var specific = template && Array.from(template.content.querySelectorAll('a[href]')).find(function (link) {
       try { return /(^|\.)(billetweb\.fr|qualiobee\.fr)$/.test(new URL(link.href).hostname); } catch (error) { return false; }
@@ -234,7 +236,7 @@
       var article = template.content.querySelector('.catalog-detail') || template.content;
       template.content.querySelector('h2').textContent = definition.title;
       // Retirer uniquement les anciennes modalités commerciales et les anciennes dates.
-      article.querySelectorAll('.catalog-detail-facts, .catalog-detail-prices, .catalog-practical-info, .catalog-environments, .catalog-approved-cta').forEach(function (element) { element.remove(); });
+      article.querySelectorAll('.catalog-detail-facts, .catalog-detail-prices, .catalog-practical-info, .catalog-environments, .catalog-external-cta').forEach(function (element) { element.remove(); });
       article.querySelectorAll('.catalog-detail-block').forEach(function (block) {
         var title = block.querySelector('h3');
         if (title && (title.textContent === 'Organisation' || title.textContent === 'Prochaines sessions' || (format.funding && title.textContent === 'Financement'))) block.remove();
